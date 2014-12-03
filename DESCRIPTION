@@ -1,0 +1,20 @@
+Package: rgsepd
+Type: Package
+Title: Gene Set Enrichment / Projection Displays
+Version: 0.99.9
+Date: 2014-11-21
+Author: Karl Stamm
+Maintainer: Karl Stamm <karl.stamm@gmail.com>
+Description: R/GSEPD is a bioinformatics package for R to help
+        disambiguate transcriptome samples (a matrix of RNA-Seq counts
+        at RefSeq IDs) by automating differential expression (with
+        DESeq2), then gene set enrichment (with GOSeq), and finally a
+        N-dimensional projection to quantify in which ways each sample
+        is like either treatment group.
+Depends: R (>= 3.0.0), DESeq2, goseq (>= 1.17)
+Imports: gplots, biomaRt, org.Hs.eg.db, GO.db, GenomicRanges, hash,
+        AnnotationDbi
+Suggests: boot, tools, RUnit, BiocGenerics, knitr, xtable
+License: GPL-3
+biocViews: Software, DifferentialExpression, GeneSetEnrichment, RNASeq
+VignetteBuilder: knitr

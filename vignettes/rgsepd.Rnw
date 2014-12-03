@@ -1,0 +1,278 @@
+\documentclass{article}
+\usepackage[backend=bibtex]{biblatex}
+\usepackage[margin=1in]{geometry}
+% !Rnw weave = knitr 
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{An Introduction to the rgsepd package}
+
+\bibliography{references}
+\begin{filecontents*}{references.bib}
+  @Article{DESeq,
+    title = {Moderated estimation of fold change and dispersion for RNA-Seq data with DESeq2},
+    author = {Michael I Love and Wolfgang Huber and Simon Anders},
+    year = {2014},
+    journal = {bioRxiv},
+    doi = {10.1101/002832},
+    url = {http://dx.doi.org/10.1101/002832},
+  }
+
+@Article{GOSeq,
+AUTHOR = {Young, Matthew and Wakefield, Matthew and Smyth, Gordon and Oshlack, Alicia},
+TITLE = {Gene ontology analysis for RNA-seq: accounting for selection bias},
+JOURNAL = {Genome Biology},
+VOLUME = {11},
+YEAR = {2010},
+NUMBER = {2},
+PAGES = {R14},
+URL = {http://genomebiology.com/2010/11/2/R14},
+DOI = {10.1186/gb-2010-11-2-r14},
+PubMedID = {20132535},
+ISSN = {1465-6906},
+ABSTRACT = {We present GOseq, an application for performing Gene Ontology (GO) analysis on RNA-seq data. GO analysis is widely used to reduce complexity and highlight biological processes in genome-wide expression studies, but standard methods give biased results on RNA-seq data due to over-detection of differential expression for long and highly expressed transcripts. Application of GOseq to a prostate cancer data set shows that GOseq dramatically changes the results, highlighting categories more consistent with the known biology.},
+}
+
+
+
+@Manual{Validity,
+    title = {V-Measure: A conditional entropy-based external cluster evaluation
+measure},
+    author = {Andrew Rosenberg and Julia Hirschberg},
+    year = {2007},
+    note = {Department of Computer Science
+Columbia University
+New York, NY 10027 },
+    url = {http://www1.cs.columbia.edu/~amaxwell/pubs/v_measure-emnlp07.pdf},
+  }
+\end{filecontents*}
+ 
+
+\begin{document}
+
+\title{R/GSEPD Tutorial \\ Gene Set Enrichment and Projection Displays}
+\author{Karl Stamm \--- karl.stamm@gmail.com \--- }
+
+<<setup_latex, include=FALSE, cache=FALSE, echo=FALSE>>=
+Sys.setenv(TEXINPUTS=getwd(),
+           BIBINPUTS=getwd(),
+           BSTINPUTS=getwd())
+library(xtable)
+@
+
+\maketitle
+
+\section{Introduction}
+\verb,GSEPD, is a package for streamlining RNA-Seq data analysis, targeting complex samples with low replicate count such as human tissues, where all factors (metabolic, genetic, etc) cannot be controlled statistically. As a prerequisite, you need only your multiple samples' count data as a matrix whose columns are samples and rows are RefSeq NM and NR transcript identifiers. A second matrix associates sample identifiers with treatment/condition.  Given both datasets, GSEPD will automate differential expression via DESeq2 \cite{DESeq}, functional analysis via GOSeq \cite{GOSeq}, generate heatmaps of gene expression for significantly differentially expressed genes, and subsets of genes defined by the significantly enriched GO Terms.
+
+After gene sets are detected from a differential expression analysis, the results are merged into a novel `projection display' wherein each sample is scored according to each condition's multidimensional average expression. When the treatment samples are found to have a perturbed expression profile for a particular GO Term (geneset), all samples are scored on an axis ranging from control to treatment condition, and outliers or anomalous samples are readily apparent. Clustering quality of samples in a given geneset-space is quantified by the cluster's ``Validity score'' \cite{Validity} and an empirical permutation derived p-value. GO Terms with more genes than samples in your comparison will randomly appear enriched, so the Segregation P-value is used to determine if a GO Term is significantly segregating your samples. 
+
+\section{Usage}
+You'll need a prepared matrix of read-counts per transcript (Table \ref{MyT1}.) You can use HTSeq or RSEM or coverageBed, or any other generation method, so long as it ends with a table of counts by transcript ID. This software comes pre-packaged with a dataset based on the IlluminaBodyMap project, counted with coverageBed. The second prerequisite is a metadata table associating sample identifiers with their test-condition and a nickname to annotate figures with (see Table \ref{MyT2} for the included sample). Alternatively, the manual/Vignette for DESeq2 describes how to generate a dataset object from HTSeq read counts, you can also initialize GSEPD with the DESeqDataSet object instead of the counts matrix.
+
+<<dataload>>=
+library(rgsepd)
+data("IlluminaBodymap" , package="rgsepd")
+data("IlluminaBodymapMeta" , package="rgsepd")
+@
+
+<<MyT1CodeBlock, echo = FALSE, results = 'hide'>>=
+T1 <- head(IlluminaBodymap,n=15L)[,c(1,2,3,4,5,9,13)]
+T2 <- head(IlluminaBodymapMeta)
+@
+
+<<MyLaTeXT1Caption, echo = FALSE, results = 'asis'>>=
+xT<-xtable(T1, caption ="First few rows of the included IlluminaBodymap dataset. See \\texttt{?IlluminaBodymap} for more details.", label = 'MyT1')
+print.xtable(xT, scalebox=0.60)
+xtable(T2, caption ="First few rows of the included IlluminaBodymapMeta dataset. See \\texttt{?IlluminaBodymapMeta} for more details. These are easy to build with a spreadsheet, saved to csv and R's builtin \\texttt{?read.csv}", label = 'MyT2')
+@
+
+Next we'll sub-select $1,000$ genes from this set for speed.  Initialize the GSEPD object with the \tt GSEPD\_INIT \rm function. Finally, to indicate which conditions will be tested as this dataset includes samples from `condition' A, B, and C, we use \tt GSEPD\_ChangeConditions\rm.
+
+
+<<setup>>=
+set.seed(1000) #fixed randomness
+isoform_ids <- Name_to_RefSeq(c("GAPDH","HIF1A","EGFR","MYH7","CD33","BRCA2"))
+rows_of_interest <- unique( c( isoform_ids ,
+                    sample(rownames(IlluminaBodymap),
+                    size=1000,replace=FALSE)))
+G <- GSEPD_INIT(Output_Folder="OUT",
+          finalCounts=round(IlluminaBodymap[rows_of_interest , ]),
+          sampleMeta=IlluminaBodymapMeta,
+            COLORS=c(blue="#4DA3FF",black="#000000",gold="#FFFF4D"))
+G <- GSEPD_ChangeConditions( G, c("A","B"))
+@
+
+This should only take a moment, and create the folder \texttt{OUT} which will hold your generated results. If you're familiar with R objects, you can explore the \texttt{G} object here and change default parameters, all set by \texttt{GSEPD\_INIT}. We'll change some parameters now to demonstrate:
+
+
+<<ParameterChanging, cache=FALSE>>=
+  G$MAX_Genes_for_Heatmap <- 25
+  G$MAX_GOs_for_Heatmap <- 30
+  G$MaxGenesInSet <- 12
+  G$LIMIT$LFC <- log( 2.50 , 2 )
+  G$LIMIT$HARD <- FALSE
+@
+
+Here we changed five default settings on the \texttt{G} master object. The parameters \texttt{MAX\_Genes\_for\_Heatmap} and \texttt{MAX\_GOs\_for\_Heatmap} cap how many rows you'll see on your final differential expression heatmap  (Figure \ref{fig:HM}) and the projection HMA file (Figure \ref{fig:HMA}), choosing the most significant rows so your figures are shorter. If you'd like a figure containing everything, make these values large. 
+
+The parameter \verb,MaxGenesInSet, controls the size of evaluated GO-Terms. Default is 30, here we reduce it to 12 for speed. Calculating projection significance for large sets can be slow. Also see \verb,MinGenesInSet, for culling niche gene sets. 
+
+The parameter \verb,LIMIT$LFC, is the $\log_2$ minimum foldchange required for significance, here we've set it to require 250\% expression up or down (default is 200\%, at LFC=1). Finally \verb,LIMIT$HARD, if \texttt{TRUE} (the default), means figures and plots will respect the specified p-value limits. Sometimes your comparison won't have any significant genes or GO-terms and later stages of the pipeline will error or quit. To force generation of all stages and plots of less-than-strictly significant sets, we have set the \verb,LIMIT$HARD=FALSE,. You'll see messages during processing if very few genes would be strictly significant, as the system adjusts the threshold automatically. By default, limits are hard at $p=0.05$. 
+
+Now we're ready to run the pipeline:
+
+<<GSEPD_Process, cache=FALSE>>=
+  G <- GSEPD_Process( G )
+@
+
+This step can take an hour on a full genome-wide dataset. If you change something and re-run GSEPD will reuse any files it finds with the same filename, so you don't have to wait for each step again, unless the filenames change. GSEPD's automation steps will convert gene identifiers, and GOSeq can take a few minutes as it runs on three differential expression sets (the upregulated, the downregulated, and the combined). All of these results are saved as CSV files under the \texttt{OUT} folder.
+
+We save the G object from a \tt GSEPD\_Process \rm 
+routine, to retain information such as the normalized counts (wherein DESeq adjusted for library sequencing depths). This object will be passed to further visualizations, such as heatmaps and PCA.
+
+<<GSEPD_Heatmap_-_PCA>>=
+  print(isoform_ids)
+  GSEPD_Heatmap(G,isoform_ids)
+  GSEPD_PCA_Plot(G)
+@
+
+
+
+\section{Results}
+Several files are generated from each run. When \tt GSEPD\_Process\rm 
+ is invoked the pre-specified conditions are compared, or when \tt GSEPD\_ProcessAll\rm 
+ is invoked, each condition is tested against all others.  For each comparison, files with the comparison listed in their filename are generated.  For a condition named ``A'' with $N$ samples, versus ``B'' with $M$ samples,  your normalized counts file will be written to \tt OUT\textbackslash DESEQ.counts.AxN.BxM.csv\rm   for example. If one of your conditions has the letter \texttt{x} in it, please change the delimiter with something like \verb,G$C2T_Delimiter <- 'z', or other unused character.
+
+
+<<MyT3>>=
+Annotated_Filtered <- read.csv("OUT/DESEQ.RES.Ax4.Bx8.Annote_Filter.csv",
+                      header=TRUE,as.is=TRUE)
+@
+
+<<MyLaTeXT3Caption, echo = FALSE, results = 'asis'>>=
+xT<-xtable(head(Annotated_Filtered, n=10L),
+           caption ="First few rows of OUT/DESEQ.RES.Ax4.Bx8.Annote\\_Filter.csv which contains the DESeq results, cropped for significant results, and annotated with gene names (the HGNC Symbol).", label = 'Table_Annote')
+print(xT, scalebox=0.70, include.rownames=FALSE)
+@
+
+
+<<MyLaTeXT5Caption, echo = FALSE, results = 'asis'>>=
+Merge_File <- read.csv("OUT/GSEPD.RES.Ax4.Bx8.MERGE.csv",
+                      header=TRUE,as.is=TRUE, nrows=20)
+xT<-xtable(head(Merge_File, n=15L),
+           caption ="First few rows of OUT/GSEPD.RES.Ax4.Bx8.MERGE.csv showing enriched GO Terms, and each terms' underlying gene expression averages per group. This data is central to the rgsepd package, defining the group centroids per GO-Term. It consists of the cross-product of the GO enrichment statistics and the DESeq differential expression and summarization. ", label = 'MyT5')
+print(xT, scalebox=0.60, include.rownames=FALSE)
+@
+
+
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.9\textwidth, type=pdf, ext=.pdf, read=.pdf]{OUT\Sexpr{.Platform$file.sep}GSEPD.PCA_AG.Ax4.Bx8}
+    \caption{OUT\textbackslash GSEPD.PCA\_AG.Ax4.Bx8.pdf is the Principle Components Analysis of All Genes, from the comparison Ax4 vs Bx8 under run OUT. This function annotates the top four major genes underlying each principle component dimension along each axis (by maximum absolute weight). Samples from the tested condition are marked in the comparison colors, here blue and gold. All genes and all samples are included. A true outlier sample can direct the principle components away from the differentiating genes, and all tested samples can show as a single cluster.}
+    \label{fig:PCA_AG}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+   \includegraphics[width=0.9\textwidth, type=pdf, ext=.pdf, read=.pdf]{OUT\Sexpr{.Platform$file.sep}GSEPD.PCA_DEG.Ax4.Bx8}
+    \caption{OUT\textbackslash GSEPD.PCA\_DEG.Ax4.Bx8.pdf is the Principle Components Analysis of only Differentially Expressed Genes, from the comparison Ax4 vs Bx8 under run OUT. This function annotates the top four major genes underlying each principle component dimension along each axis (by maximum absolute weight). Samples from the tested condition are marked in the comparison colors, here blue and gold, with the non-comparison samples marked as black `Other'. \textbf{Because we're only reviewing genes found to be differentially expressed, this plot is guaranteed to show separation of your samples, sometimes spuriously.} }
+    \label{fig:PCA_DEG}
+\end{figure}
+
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.9\textwidth, type=pdf, ext=.pdf, read=.pdf]{OUT\Sexpr{.Platform$file.sep}DESEQ.Volcano.Ax4.Bx8}
+    \caption{OUT\textbackslash DESEQ.Volcano.Ax4.Bx8.pdf is the `volcano' plot from the comparison Ax4 vs Bx8. Here, the horizontal axis is the relative fold-change between conditions, and the vertical is significance. A left-right balanced figure indicates similar numbers of genes found up and down-regulated. The bundled IlluminaBodymap dataset does not have biological replicates, causing the Volcano plot to show too many significant genes. }
+    \label{fig:Volcano}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.9\textwidth, type=pdf, ext=.pdf, read=.pdf]{OUT\Sexpr{.Platform$file.sep}GSEPD.HMA.Ax4.Bx8}
+    \caption{OUT\textbackslash GSEPD.HMA.Ax4.Bx8.pdf is the projection display summary heatmap from the comparison Ax4 vs Bx8. Here, as in a normal heatmap, your samples are columns, and rows are GO Terms with significant segregation ability. All rows and columns are arranged to cluster. The color in each cell represents the sample's Alpha score for that GO Term, with blue indicating similarity to class `A', and the gold indicating similarity to class `B'. The unlabeled top row indicates the comparison categories, also seen on the sample labels along the bottom (A, B, or C). Any white dots indicate the sample was distant from the axis between conditions, so the color should be interpreted with caution or investigated further. The most interesting results from GSEPD are here, when unclassified samples (Blood/C) are scored as similar to either of the tested conditions on a geneset-by-geneset basis. Both the Alpha table and Beta table are summarized in the HMA figure.}
+    \label{fig:HMA}
+\end{figure}
+
+
+
+<<AlphaBetaTables, echo = FALSE, results = 'asis'>>=
+Alpha_File <- read.csv("OUT/GSEPD.Alpha.Ax4.Bx8.csv",
+                      header=TRUE,as.is=TRUE, nrows=20, row.names=1)
+xT<-xtable(head(Alpha_File, n=10L)[,c(1,2,3,4,5,9,13)],
+           caption ="First ten rows of OUT/GSEPD.Alpha.Ax4.Bx8.csv showing the group projection scores for each sample, these directly correspond to the colors in the HMA file. Where the HMA displays only significant sets, the Alpha table continues for all tested GO Terms. Both the Alpha table and Beta table are summarized in Figure \\ref{fig:HMA}.", label = 'TableAlpha')
+print(xT, scalebox=0.80, include.rownames=TRUE)
+Beta_File <- read.csv("OUT/GSEPD.Beta.Ax4.Bx8.csv",
+                      header=TRUE,as.is=TRUE, nrows=20, row.names=1)
+xT<-xtable(head(Beta_File, n=10L)[,c(1,2,3,4,5,9,13)],
+           caption ="First ten rows of OUT/GSEPD.Beta.Ax4.Bx8.csv showing the linear divergence (distance to axis) for each sample, high values here would be annotated with white dots on the HMA file to indicate that a sample is not falling on the axis. Non-tested samples are expected to frequently have high values here, the C group was not part of the A vs B comparison.  Where the HMA displays only significant sets, the Beta table continues for all tested GO Terms. Both the Alpha table and Beta table are summarized in Figure \\ref{fig:HMA}.", label = 'TableBeta')
+print(xT, scalebox=0.80, include.rownames=TRUE)
+@
+
+
+
+
+<<FindFiles, echo = FALSE, results = 'asis'>>=
+HM_File <- list.files("OUT",pattern="HM.A")
+PScatter_File <- list.files("OUT//SCGO",pattern="Scatter.Ax")[1]
+PGSEPD_File <- list.files("OUT//SCGO",pattern="GSEPD.Ax")[1]
+PPairs_File <- list.files("OUT//SCGO",pattern="Pairs.Ax")[1]
+#trim the .PDF
+HM_File <- substring(HM_File,0,nchar(HM_File)-4)
+PScatter_File <- substring(PScatter_File,0,nchar(PScatter_File)-4)
+PGSEPD_File <- substring(PGSEPD_File,0,nchar(PGSEPD_File)-4)
+PPairs_File <- substring(PPairs_File,0,nchar(PPairs_File)-4)
+
+@
+
+
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[height=0.75\textheight, type=pdf, ext=.pdf, read=.pdf]{OUT\Sexpr{.Platform$file.sep}\Sexpr{HM_File}}
+    \caption{OUT\textbackslash \Sexpr{HM_File}.pdf is a heatmap of your comparisons with full expression details for those genes found 
+    significantly expressed. The number of genes is given in the filename. 
+    Each row is scaled such that the lowest values are blue and the highest are gold (default colors are changable in GSEPD\_INIT). 
+    The numbers within each cell are the expression values as variance-stabilized normalized counts, similar to a log transform, provided by DESeq2. 
+    Across the top, between the sample clustering dendrogram and the heatmap itself is a colorbar annotating which samples belong to which comparison group, 
+    for this differential expression blue vs gold. 
+    Black corresponds to extraneous samples, contributing context. 
+    Other variations of this plot with less information are generated as HMS files (compared samples only) and HM- files (minimal figure without details). }
+    \label{fig:HM}
+\end{figure}
+
+
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.95\textwidth, type=pdf,  ext=.pdf, read=.pdf, page=1]{OUT\Sexpr{.Platform$file.sep}SCGO\Sexpr{.Platform$file.sep}\Sexpr{PGSEPD_File}}
+    \caption{OUT\textbackslash SCGO\textbackslash \Sexpr{PGSEPD_File}.pdf First page of the projections file for one GO Term. All significant sets have this figure generated displaying the central axis between two groups as a black line (with ends annotated Ax4 and Bx8), and each sample's closest point along the line. These files have half as many pages as genes in the set, so we can display pairs as two-dimensional scatterplots. It's a workaround to the problem of displaying an N-dimensional scatterplot. For sets with fewer than 11 genes, full pairings are viewable with the Pairs file, Figure \ref{fig:PAIRS} }
+    \label{fig:GSEPD}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.95\textwidth, type=pdf,  ext=.pdf, read=.pdf]{OUT\Sexpr{.Platform$file.sep}SCGO\Sexpr{.Platform$file.sep}\Sexpr{PPairs_File}}
+    \caption{OUT\textbackslash SCGO\textbackslash \Sexpr{PPairs_File}.pdf The Pairs file is generated for significant GO terms with between two and ten genes, making it easy to review correlations or subgroups of gene expression among low-level gene sets.}
+    \label{fig:PAIRS}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.95\textwidth, type=pdf,  ext=.pdf, read=.pdf]{OUT\Sexpr{.Platform$file.sep}SCGO\Sexpr{.Platform$file.sep}\Sexpr{PScatter_File}}
+    \caption{OUT\textbackslash SCGO\textbackslash \Sexpr{PScatter_File}.pdf The Scatter file is similar to the PCA files, but the gene set is restricted to those within a given, significant, GO Term. As in the PCA file, genes driving the principle components are annotated along the axes. At the bottom of the figure, statistics are given pertaining to this group. All such data is available in tables, but this Scatter plot helps the user see which samples behave like which groups. Depending on the number of genes relative to the number of samples, different PCA formulas may be used. For a set with only two genes, this file can directly display the expression values as normalized counts, the same as found on the expression heatmap (Fig. \ref{fig:HM}.)}
+    \label{fig:Scatter}
+\end{figure}
+
+
+\section*{References}
+The citation for GSEPD is not available, as the article is under revision.
+
+\printbibliography
+
+\section*{Session Info}
+<<sessionInfo>>=
+  sessionInfo()
+@
+
+\end{document}
