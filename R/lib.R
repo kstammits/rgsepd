@@ -115,7 +115,7 @@ plotDE <- function( res ) {
   plot( 
     cap(res$log2FoldChange,-7,7), 
     0-log(res$pval,base=10), 
-    pch=20, cex=.25, 
+    pch=20, cex=.33, 
     col = ifelse( res$padj < .10, "red", "black" ),
     main=sprintf("Volcano for %d Genes",nrow(res)),
     xlab="Log2 FoldChange",
@@ -186,8 +186,8 @@ AnnotateTable <- function(G){
   #id	baseMean	baseMeanA	baseMeanB	foldChange	log2FoldChange	pval	padj
   # print("dumping rows with PADJ>0.90")
   # res=subset(res,padj <= 0.90)
-  message("dumping rows with raw PVAL>0.990 OR baseMean < 5 OR on excludes list")
-  res=subset(res,res$pval <= 0.990 & res$baseMean >= 5 & !(res$id %in% G$EXCLUDES))
+  message("dumping rows with raw PVAL>0.990 OR baseMean < 1 OR on excludes list")
+  res=subset(res,res$pval <= 0.990 & res$baseMean >= 1 & !(res$id %in% G$EXCLUDES))
   res$id = sub(" +$", "", res$id)
   message(paste("Rows remaining:",length(res$id)));
   if(length(unique(res$id)) < 1){

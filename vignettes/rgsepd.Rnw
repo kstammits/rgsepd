@@ -68,6 +68,9 @@ After gene sets are detected from a differential expression analysis, the result
 \section{Usage}
 You'll need a prepared matrix of read-counts per transcript (Table \ref{MyT1}.) You can use HTSeq or RSEM or coverageBed, or any other generation method, so long as it ends with a table of counts by transcript ID. This software comes pre-packaged with a dataset based on the IlluminaBodyMap project, counted with coverageBed. The second prerequisite is a metadata table associating sample identifiers with their test-condition and a nickname to annotate figures with (see Table \ref{MyT2} for the included sample). Alternatively, the manual/Vignette for DESeq2 describes how to generate a dataset object from HTSeq read counts, you can also initialize GSEPD with the DESeqDataSet object instead of the counts matrix.
 
+\subsection{Naming Conventions}
+In \verb,R,, column names are not allowed to have spaces or certain special characters like $+$ or \/. As your sample names are the columns of the count table, this implies your sample names may not have special characters or spaces. When you load a table with invalid column headers, \verb,R, may silently convert invalid characters into periods, thus ``Sample 1'' becomes ``Sample.1''. If your metadata table (where samples must be annotated) matches the original count table, it won't match this converted name, and you'll either get an error about samples not being found, or worse, an apparently successful run with invalid data. In later stages of the \verb,GSEPD, process your test conditions also become column headers, and spaces will cause an error before completion. It's better to compare groups \verb,`test', vs \verb,`control', than \verb,`lung tissue', vs \verb,`healthy(-ish) person',.
+
 <<dataload>>=
 library(rgsepd)
 data("IlluminaBodymap" , package="rgsepd")
@@ -182,8 +185,8 @@ print(xT, scalebox=0.60, include.rownames=FALSE)
 
 \begin{figure}[p]
     \centering
-    \includegraphics[width=0.9\textwidth, type=pdf, ext=.pdf, read=.pdf]{OUT\Sexpr{.Platform$file.sep}DESEQ.Volcano.Ax4.Bx8}
-    \caption{OUT\textbackslash DESEQ.Volcano.Ax4.Bx8.pdf is the `volcano' plot from the comparison Ax4 vs Bx8. Here, the horizontal axis is the relative fold-change between conditions, and the vertical is significance. A left-right balanced figure indicates similar numbers of genes found up and down-regulated. The bundled IlluminaBodymap dataset does not have biological replicates, causing the Volcano plot to show too many significant genes. }
+    \includegraphics[width=0.9\textwidth, type=png, ext=.png, read=.png]{OUT\Sexpr{.Platform$file.sep}DESEQ.Volcano.Ax4.Bx8}
+    \caption{OUT\textbackslash DESEQ.Volcano.Ax4.Bx8.png is the `volcano' plot from the comparison Ax4 vs Bx8. Here, the horizontal axis is the relative fold-change between conditions, and the vertical is significance. A left-right balanced figure indicates similar numbers of genes found up and down-regulated. The bundled IlluminaBodymap dataset does not have biological replicates, causing the Volcano plot to show too many significant genes. }
     \label{fig:Volcano}
 \end{figure}
 

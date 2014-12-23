@@ -104,7 +104,7 @@ ProcessDESEQ <- function(G){
                        subset(G$sampleMeta, G$sampleMeta$Condition==G$Conditions[2])$Sample)
 
   if(length(Columns.A)>1)
-    res$baseMeanA <- apply( G$normCounts[,Columns.A],1,mean)
+    res$baseMeanA <- apply( G$normCounts[,Columns.A],1,mean) #but normCounts are logspace, so this mean is biased low...
   else
     res$baseMeanA <- G$normCounts[,Columns.A] # mean of one element
   if(length(Columns.B)>1)
@@ -112,9 +112,9 @@ ProcessDESEQ <- function(G){
   else
     res$baseMeanB <- G$normCounts[,Columns.B] # mean of one element
 
-  outfilename=paste(G$Output_Folder,"/DESEQ.Volcano.",G$C2T[1],".",G$C2T[2],".pdf",sep="")
+  outfilename=paste(G$Output_Folder,"/DESEQ.Volcano.",G$C2T[1],".",G$C2T[2],".png",sep="")
   if(!G$QUIET)Message_Generate(outfilename)
-  pdf(file=outfilename);
+  png(file=outfilename); # volcano with 30K points was too slow as PDF
   plotDE( res )
   dev.off();
   
@@ -126,7 +126,7 @@ ProcessDESEQ <- function(G){
 GSEPD_ProcessAll <- function(G){
   X<-as.character(unique(G$sampleMeta$Condition))
   Xn<-length(X)
-  message(sprintf("Gearing up to run %d conditions as %d pairs",Xn,Xn*(Xn-1)-Xn))
+  message(sprintf("Preparing to run %d conditions as %d pairs",Xn,Xn*(Xn-1)-Xn))
   for(i in 1:(Xn-1))
     for(j in (i+1):Xn){
       G<-GSEPD_ChangeConditions(G,c(X[i],X[j]))

@@ -8,7 +8,7 @@ GSEPD_PCA_Plot <- function(GSEPD){
     stop("specified conditions not found in sample metadata table")
   
   fc <- GSEPD$normCounts
-  dropRows <- apply(fc,1,mean) < 10
+  dropRows <- apply(fc,1,mean) < 0 #normCounts are DESeq2 VST, nearly log2 space
   fc<-fc[!dropRows,]
   sfc<-t(scale(t( (fc))))
   dropRows <- apply(sfc,1,function(x){any(is.nan(x))})

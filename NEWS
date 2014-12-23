@@ -1,2 +1,3 @@
+Version 0.99.10 bugfix in G$LIMIT$baseMean and explanations of naming conventions in the vignette.
 Version 0.99.4 replacing DESeq with DESeq2 Fall2014
 Version 0 Release package. Fall 2014.
