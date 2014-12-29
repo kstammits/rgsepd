@@ -55,7 +55,15 @@ GSEPD_Process <- function(GSEPD){
       }
       FileMerge(GSEPD)
     }
-    GSEPD_PCA_Plot(GSEPD) ## make another picture 
+    
+    tryCatch({ #sometimes the PCA fails...
+      GSEPD_PCA_Plot(GSEPD) ## make another picture
+      }, warning = function(w) {
+        warning(w)
+      }, error = function(e) {
+        warning(e) #but it's no big deal if a picture isn't made.
+      })
+    
     GSEPD_ProjectionProcessor(GSEPD) #and do a lot of work.
   }
   MergeResultsTables(GSEPD)
@@ -126,7 +134,7 @@ ProcessDESEQ <- function(G){
 GSEPD_ProcessAll <- function(G){
   X<-as.character(unique(G$sampleMeta$Condition))
   Xn<-length(X)
-  message(sprintf("Preparing to run %d conditions as %d pairs",Xn,Xn*(Xn-1)-Xn))
+  message(sprintf("Preparing to run %d conditions as %d pairs",Xn,Xn*(Xn-1)/2))
   for(i in 1:(Xn-1))
     for(j in (i+1):Xn){
       G<-GSEPD_ChangeConditions(G,c(X[i],X[j]))

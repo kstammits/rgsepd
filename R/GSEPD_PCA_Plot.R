@@ -3,10 +3,15 @@ GSEPD_PCA_Plot <- function(GSEPD){
 
   sampleMeta<- GSEPD$sampleMeta
   Condition<- GSEPD$Conditions
+  if(is.null(Condition)) 
+    stop("Must specify conditions to test with GSEPD_ChangeConditions before GSEPD_PCA_Plot")
+   #if only due to the CheckCounts below.
+  
   COLORS=GSEPD$COLORS
   if(!(all(Condition %in% sampleMeta$Condition))) 
     stop("specified conditions not found in sample metadata table")
   
+  GSEPD<-GSEPD_CheckCounts(GSEPD) #ensure #normCounts exists....
   fc <- GSEPD$normCounts
   dropRows <- apply(fc,1,mean) < 0 #normCounts are DESeq2 VST, nearly log2 space
   fc<-fc[!dropRows,]
@@ -28,25 +33,24 @@ GSEPD_PCA_Plot <- function(GSEPD){
   pchs[as.character(sampleMeta$Condition)==Condition[1]]=1
   pchs[as.character(sampleMeta$Condition)==Condition[2]]=2
   
+  pc.md<-prcomp(sfc)
   
-  pc.md<-princomp(sfc)
-   
   lbs=unlist(lapply(1:ncol(sfc),function(i){sampleMeta$SHORTNAME[sampleMeta$Sample==colnames(sfc)[i]]}))
-  dims=c("Comp.1","Comp.2")
+  dims=c("PC1","PC2")
   outfilename=sprintf("%s/GSEPD.PCA_AG.%s.%s.pdf",GSEPD$Output_Folder,GSEPD$C2T[1],GSEPD$C2T[2])
   Message_Generate(outfilename)
   pdf(outfilename,width=6,height=6)
-    plot(pc.md$loadings[,dims], xlab="", ylab="", col=cols, pch=pchs)
-    x=pc.md$loadings[,dims[1]]
-    y=pc.md$loadings[,dims[2]]
+    plot(pc.md$rotation[,dims], xlab="", ylab="", col=cols, pch=pchs)
+    x=pc.md$rotation[,dims[1]]
+    y=pc.md$rotation[,dims[2]]
     xo=rep(0,ncol(sfc)) ; yo=xo;
     text(x=x+xo,y=y-0.015+yo,labels=lbs, xpd=TRUE, cex=0.75)
-    ANNOTE_GENES=4 #the most important genes are 
-    PC1= names(sort( abs(pc.md$scores[,dims[1]]) ,
+    ANNOTE_GENES=min(c(5,nrow(sfc))) #the most important genes are 
+    PC1= names(sort( abs(pc.md$x[,dims[1]]) ,
                      decreasing=TRUE )[1:ANNOTE_GENES])
     gns=DisplayName(PC1);
     mtext(side=1,text=gns,at=seq(min(x),max(x),length.out=ANNOTE_GENES),line=3)
-    PC2= names(sort( abs(pc.md$scores[,dims[2]]) ,
+    PC2= names(sort( abs(pc.md$x[,dims[2]]) ,
                      decreasing=TRUE )[1:ANNOTE_GENES])
     gns=DisplayName(PC2);
     mtext(side=2,text=gns,at=seq(min(y),max(y),length.out=ANNOTE_GENES),line=3) 
@@ -78,27 +82,27 @@ GSEPD_PCA_Plot <- function(GSEPD){
     keepRows=keepRows[keepRows%in%rownames(sfc)]
     sfc=sfc[keepRows,]
     
-    if(nrow(sfc) <= ncol(sfc)){
+    if(nrow(sfc) < 3){
       #not enough DEG to bother PCAing...
-      warning("fewer filtered genes than subjects: can't PCA for DEG")
+      warning("less than three filtered genes: can't meaningfully PCA for DEG")
       return();
     }
-    
-    pc.md<-princomp(sfc)
+
+    pc.md<-prcomp(sfc)
     outfilename=sprintf("%s/GSEPD.PCA_DEG.%s.%s.pdf",GSEPD$Output_Folder,GSEPD$C2T[1],GSEPD$C2T[2])
     Message_Generate(outfilename)
     pdf(outfilename,width=6,height=6)
-      plot(pc.md$loadings[,dims], xlab="", ylab="", col=cols, pch=pchs)
-      x=pc.md$loadings[,dims[1]]
-      y=pc.md$loadings[,dims[2]]
+      plot(pc.md$rotation[,dims], xlab="", ylab="", col=cols, pch=pchs)
+      x=pc.md$rotation[,dims[1]]
+      y=pc.md$rotation[,dims[2]]
       xo=rep(0,ncol(sfc)) ; yo=xo;
       text(x=x+xo,y=y-0.015+yo,labels=lbs, xpd=TRUE, cex=0.75)
-      ANNOTE_GENES=4 #the most important genes are 
-      PC1= names(sort( abs(pc.md$scores[,dims[1]]) ,
+      ANNOTE_GENES=min(c(5,nrow(sfc))) #the most important genes are 
+      PC1= names(sort( abs(pc.md$x[,dims[1]]) ,
                        decreasing=TRUE )[1:ANNOTE_GENES])
       gns=DisplayName(PC1)
       mtext(side=1,text=gns,at=seq(min(x),max(x),length.out=ANNOTE_GENES),line=3)
-      PC2= names(sort( abs(pc.md$scores[,dims[2]]) ,
+      PC2= names(sort( abs(pc.md$x[,dims[2]]) ,
                        decreasing=TRUE )[1:ANNOTE_GENES])
       gns=DisplayName(PC2)
       mtext(side=2,text=gns,at=seq(min(y),max(y),length.out=ANNOTE_GENES),line=3) 
@@ -161,7 +165,7 @@ GSEPD_PCA_Spec <- function(GSEPD, GOT, MDATA=NULL){
          pch=pchs, col=cols )    
     xo=rep(0,NS) ; yo=xo;
     text(x=sfc[1,]+xo,y=sfc[2,]-0.015+yo,labels=lbs, xpd=TRUE, cex=0.75)
-  }else if(NG <= NS){ ## prcomp when fewer genes than subjects
+  }else { ## prcomp when >2 genes
     sfc=t(scale(t(fc)))
     pc.md<-prcomp(sfc)
     dims=c("PC1","PC2")
@@ -170,30 +174,12 @@ GSEPD_PCA_Spec <- function(GSEPD, GOT, MDATA=NULL){
     y=pc.md$rotation[,dims[2]]
     xo=rep(0,NS) ; yo=xo;
     text(x=x+xo,y=y-0.015+yo,labels=lbs, xpd=TRUE, cex=0.75)
-    ANNOTE_GENES=3 #the most important genes are 
+    ANNOTE_GENES=min(c(5,nrow(sfc))) #the most important genes are 
     PC1= names(sort( abs(pc.md$x[,dims[1]]) ,
                      decreasing=TRUE )[1:ANNOTE_GENES])
     gns=hash::values(HGNC[PC1])
     mtext(side=1,text=gns,at=seq(min(x),max(x),length.out=ANNOTE_GENES),line=3)
     PC2= names(sort( abs(pc.md$x[,dims[2]]) ,
-                     decreasing=TRUE )[1:ANNOTE_GENES])
-    gns=hash::values(HGNC[PC2])
-    mtext(side=2,text=gns,at=seq(min(y),max(y),length.out=ANNOTE_GENES),line=3) 
-  }else{ #lots of genes, regular princomp for more genes than subjects
-    sfc=t(scale(t(fc)))
-    pc.md<-princomp(sfc)
-    dims=c("Comp.1","Comp.2")
-    plot(pc.md$loadings[,dims], xlab="", ylab="", col=cols, pch=pchs, main=sprintf("PCA for %s",GOName))
-    x=pc.md$loadings[,dims[1]]
-    y=pc.md$loadings[,dims[2]]
-    xo=rep(0,NS) ; yo=xo;
-    text(x=x+xo,y=y-0.015+yo,labels=lbs, xpd=TRUE, cex=0.75)
-    ANNOTE_GENES=4 #the most important genes are 
-    PC1= names(sort( abs(pc.md$scores[,dims[1]]) ,
-                     decreasing=TRUE )[1:ANNOTE_GENES])
-    gns=hash::values(HGNC[PC1])
-    mtext(side=1,text=gns,at=seq(min(x),max(x),length.out=ANNOTE_GENES),line=3)
-    PC2= names(sort( abs(pc.md$scores[,dims[2]]) ,
                      decreasing=TRUE )[1:ANNOTE_GENES])
     gns=hash::values(HGNC[PC2])
     mtext(side=2,text=gns,at=seq(min(y),max(y),length.out=ANNOTE_GENES),line=3) 

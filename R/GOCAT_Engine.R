@@ -248,24 +248,26 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
     #and remove those non-significant
     sr <- sr[ GO_SumPs[sr] <= (GSEPD$LIMIT$GO_PVAL  +  GSEPD$LIMIT$Seg_P)] ;
     
-    RowLabelColors <- rep("black",length(sr));
-    names(RowLabelColors)<-cats[sr]
-    sMdata<-subset(M.data, !duplicated(M.data$category), select=c("category","GOSEQ_DEG_Type"))
-    for(j in 1:length(sr)){
-      cj<-cats[sr[j]];DEGType<-sMdata$GOSEQ_DEG_Type[sMdata$category==cj];
-      RowLabelColors[j] <- ifelse(DEGType=="Up",GSEPD$COLORS[3],
-                                  ifelse(DEGType=="Down",GSEPD$COLORS[1],
-                                         GSEPD$COLORS[2]))
-    } ; rm(sMdata)
     
     if(length(sr) > 1) {
+    
+      RowLabelColors <- rep("black",length(sr));
+      names(RowLabelColors)<-cats[sr]
+      sMdata<-subset(M.data, !duplicated(M.data$category), select=c("category","GOSEQ_DEG_Type"))
+      for(j in 1:length(sr)){
+        cj<-cats[sr[j]];DEGType<-sMdata$GOSEQ_DEG_Type[sMdata$category==cj];
+        RowLabelColors[j] <- ifelse(DEGType=="Up",GSEPD$COLORS[3],
+                                    ifelse(DEGType=="Down",GSEPD$COLORS[1],
+                                           GSEPD$COLORS[2]))
+      } ; rm(sMdata)
+      
       pdf(GSEPD_HMA_File(GSEPD), height=6+length(sr)/7,width=6+ncol(zOM)*0.25)
       heatmap.2(zOM[sr,], labRow=GONames[sr], scale="none", trace="none", margins=c(10,35),
                 cexRow=1.25,labCol=ColumnLabels,cellnote=cellnote[sr,],notecex=3,notecol="white",
                 ColSideColors=ColLabelColors, RowSideColors=RowLabelColors, col=GSEPD$COLORFUNCTION);
       dev.off()
     }else{
-      warning("I refuse to make the HMA file with <2 rows. See your GO tables.")
+      warning("Not generating HMA file:  <2 significant rows. See your GOSEQ and Segregation tables for details.")
     }
     
     #for the rows seen in the heatmap...

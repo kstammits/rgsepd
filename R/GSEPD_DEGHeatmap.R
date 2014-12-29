@@ -1,14 +1,13 @@
 
 GSEPD_DEGHeatmap <- function(G){
   
-  infile=DESEQ_AFile(G)
-  
-  data=read.csv(infile,as.is=TRUE,header=TRUE)
-  data=subset(data,!duplicated(data$ENTREZ))
-  sdata=subset(data, data$ENTREZ != "NA" & data$baseMean >= G$LIMIT$baseMean)
-  DEG=ifelse(sdata$PADJ <= G$LIMIT$PADJ & abs(sdata$LOG2.X.Y.) >= G$LIMIT$LFC , 1,0)
-  
   if(!(G$LIMIT$HARD)) { #if the limit is not hard, move it around
+    #refilter from full dataset:
+    infile=DESEQ_AFile(G)  
+    data=read.csv(infile,as.is=TRUE,header=TRUE)
+    data=subset(data,!duplicated(data$ENTREZ))
+    sdata=subset(data, data$ENTREZ != "NA" & data$baseMean >= G$LIMIT$baseMean)
+    DEG=ifelse(sdata$PADJ <= G$LIMIT$PADJ & abs(sdata$LOG2.X.Y.) >= G$LIMIT$LFC , 1,0)
     ToLevel=round((0.0010*length(DEG)))
     PThresh = sort(sdata$PVAL,decreasing=FALSE)[ToLevel]
     if(sum(DEG)<(0.0010*length(DEG))){
@@ -23,13 +22,20 @@ GSEPD_DEGHeatmap <- function(G){
       DEG=ifelse(sdata$PVAL <= PThresh , 1,0)
       message(sprintf("Too many genes found differentially expressed, changing the  threshold to raw p=%f so we can use %d genes in the heatmap.",PThresh,sum(DEG)))
     }
+  } else { #else limit is hard: use the pre-generated Annote_Filter file 
+    infile=DESEQ_AFFile(G)
+    #it's already subsetted:
+    sdata=read.csv(infile,as.is=TRUE,header=TRUE)
+    #and everything is DEG, by definition:
+    DEG= rep(1,nrow(sdata)) 
   }
+    
   ROI=sdata$REFSEQ[DEG==1]
   
   plotFile=sprintf("%s/HM.%s.%s.%d.pdf",G$Output_Folder, G$C2T[1],G$C2T[2],sum(DEG))
   Message_Generate(plotFile) #let the user know how we're busy
   if(length(ROI)<2){
-    warning("Can't make heatmaps of less than 2 rows. Check your DESEQ RES Annote_Filter file.")
+    warning("Can't make heatmaps of less than 2 rows. Check your DESEQ result Annote_Filter file.")
     return();
   }
   
