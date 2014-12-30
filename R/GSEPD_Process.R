@@ -122,7 +122,7 @@ ProcessDESEQ <- function(G){
 
   outfilename=paste(G$Output_Folder,"/DESEQ.Volcano.",G$C2T[1],".",G$C2T[2],".png",sep="")
   if(!G$QUIET)Message_Generate(outfilename)
-  png(file=outfilename); # volcano with 30K points was too slow as PDF
+  png(filename=outfilename); # volcano with 30K points was too slow as PDF
   plotDE( res )
   dev.off();
   

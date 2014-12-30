@@ -1,6 +1,6 @@
 \name{GSEPD_DEGHeatmap}
 \alias{GSEPD_DEGHeatmap}
-%- Also NEED an '\alias' for EACH other topic documented here.
+
 \title{
  Differentially Expressed Genes Heatmap 
 }
@@ -12,14 +12,14 @@
 }
 \arguments{
   \item{G}{
-  The GSEPD master object carries sample information and gene expression data. It should have already run Process() to be eligible. 
+  The GSEPD master object carries sample information and gene expression data. It should have already run Process() to be eligible.  Parameters regarding differential expression limits are set within the G$LIMIT list object. 
  }
 }
 \details{
  After GSEPD_Process() has created differential expression tables with known filenames, this function can read those tables and make heatmap plots for a subset of genes.  We use the N most significant genes, specified by the \code{MAX_Genes_for_Heatmap} parameter of the passed GSEPD object.
 }
 \value{
- This function doesn't return anything. If successful, a new PDF file will be created. Four actually. HM and HM- are all subjects from sampleMeta and finalCounts, HMS and HMS- are only those in the test groups. The hyphen indicates a smaller unlabeled figure.
+ This function doesn't return anything. If successful, four PDF files are created. HM and HM- are all subjects from sampleMeta and finalCounts, HMS and HMS- are only those in the test groups. The hyphen indicates a smaller unlabeled figure.
 }
 \examples{
   data("IlluminaBodymap")
