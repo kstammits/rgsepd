@@ -117,7 +117,7 @@ This should only take a moment, and create the folder \texttt{OUT} which will ho
 
 Here we changed five default settings on the \texttt{G} master object. The parameters \texttt{MAX\_Genes\_for\_Heatmap} and \texttt{MAX\_GOs\_for\_Heatmap} cap how many rows you'll see on your final differential expression heatmap  (Figure \ref{fig:HM}) and the projection HMA file (Figure \ref{fig:HMA}), choosing the most significant rows so your figures are shorter. If you'd like a figure containing everything, make these values large. 
 
-The parameter \verb,MaxGenesInSet, controls the size of evaluated GO-Terms. Default is 30, here we reduce it to 12 for speed. Calculating projection significance for large sets can be slow. Also see \verb,MinGenesInSet, for culling niche gene sets. 
+The parameter \verb,MaxGenesInSet, controls the size of evaluated GO-Terms. Default is 30, here we reduce it to 12 for speed. Calculating projection significance for large sets can be slow. Also see \verb,MinGenesInSet, for culling niche gene sets. The goal here is to limit our results to gene sets which are not too broad and not too narrow. 
 
 The parameter \verb,LIMIT$LFC, is the $\log_2$ minimum foldchange required for significance, here we've set it to require 250\% expression up or down (default is 200\%, at LFC=1). Finally \verb,LIMIT$HARD, if \texttt{TRUE} (the default), means figures and plots will respect the specified p-value limits. Sometimes your comparison won't have any significant genes or GO-terms and later stages of the pipeline will error or quit. To force generation of all stages and plots of less-than-strictly significant sets, we have set the \verb,LIMIT$HARD=FALSE,. You'll see messages during processing if very few genes would be strictly significant, as the system adjusts the threshold automatically. By default, limits are hard at $p=0.05$. 
 
@@ -143,7 +143,15 @@ routine, to retain information such as the normalized counts (wherein DESeq adju
 \section{Results}
 Several files are generated from each run. When \tt GSEPD\_Process\rm 
  is invoked the pre-specified conditions are compared, or when \tt GSEPD\_ProcessAll\rm 
- is invoked, each condition is tested against all others.  For each comparison, files with the comparison listed in their filename are generated.  For a condition named ``A'' with $N$ samples, versus ``B'' with $M$ samples,  your normalized counts file will be written to \tt OUT\textbackslash DESEQ.counts.AxN.BxM.csv\rm   for example. If one of your conditions has the letter \texttt{x} in it, please change the delimiter with something like \verb,G$C2T_Delimiter <- 'z', or other unused character.
+ is invoked, each condition is tested against all others.  For each comparison, files with the comparison listed in their filename are generated.  For a condition named ``A'' with $N$ samples, versus ``B'' with $M$ samples,  your normalized counts file will be written to \tt OUT\textbackslash DESEQ.counts.AxN.BxM.csv\rm 
+for example. If one of your conditions has the letter \texttt{x} in it, please change the delimiter with something like \verb,G$C2T_Delimiter <- 'z', or other unused character.
+ 
+\subsection{Heatmap Organizational Clustering}
+Each generated heatmap figure organizes the rows and columns such that similar profiles are adjacent. For this we use the default methods of \tt gplots::heatmap.2 \rm 
+which calls \tt hclust \rm
+on the supplied data. For gene heatmaps where you see numbers in each cell, representing the gene's expression value calculated by \tt DESeq2::varianceStabilizingTransformation \rm
+, the magnitude of a gene's expression might dominate the heirarchical clustering, so scaling is warranted. GSEPD will scale gene expression values within each row(gene) as a normal Gaussian by subtracting the row's mean and dividing out the standard deviation. Therefore it is dependent on the samples used in the figure, and heirarchical clustering with complete linkage is not guaranteed to be stable. To ensure some values of each specified color, the normalized color data is capped to a specifiable minimum and maximum (default 3) before heatmap.2's clustering is performed.
+
 
 
 <<MyT3>>=

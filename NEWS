@@ -1,3 +1,4 @@
+Version 0.99.12 expanding user manuals to clarify how figures and clustering is performed. 
 Version 0.99.11 bugfix in ProcessAll cardinality message. Error catching around PCA. Heatmap genelist now respects Annote_Filter file when LIMIT$HARD. Cleaned up warnings when no rows for HMA. Bugfix in PCA regarding non-negative definite covariance from princomp's eigen: replaced all instances with prcomp(). 
 Version 0.99.10 bugfix in G$LIMIT$baseMean and explanations of naming conventions in the vignette.
 Version 0.99.4 replacing DESeq with DESeq2 Fall2014

@@ -6,7 +6,7 @@
 #version 0.99.7 adding some error handling November2014-KStamm
 
 
-GSEPD_Heatmap <- function(G,genes,cap.range=3,cellnote="log10"){
+GSEPD_Heatmap <- function(G,genes,cap_range=3,cellnote="log10"){
   
   G<-GSEPD_CheckCounts(G) #have to have finished GSEPD_Process() before we can use it
   
@@ -19,12 +19,12 @@ GSEPD_Heatmap <- function(G,genes,cap.range=3,cellnote="log10"){
   fc=fc[genes,] #subset rows
   hmData <- fc
   if(cellnote=="log10")
-  cellnote=signif(fc,digits=2)
+   cellnote=signif(fc,digits=2)
   
   Sample_Columns <- which(G$sampleMeta$Condition %in% G$Conditions)
   rowMeans <- apply(hmData[,Sample_Columns],1,mean)
   rowSD <- apply(hmData[,Sample_Columns],1,sd)+0.01
-  zData <- cap( t(t(hmData-rowMeans)/rowSD),0-cap.range,cap.range)
+  zData <- cap( t(t(hmData-rowMeans)/rowSD),0-cap_range,cap_range)
   rownames(zData)<- mapply( function(x){
     j<-DisplayName(x); if(is.na(j) || nchar(j)<2) j<-x; j}, rownames(zData))
   

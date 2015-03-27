@@ -19,7 +19,7 @@
  After GSEPD_Process() has created differential expression tables with known filenames, this function can read those tables and make heatmap plots for a subset of genes.  We use the N most significant genes, specified by the \code{MAX_Genes_for_Heatmap} parameter of the passed GSEPD object.
 }
 \value{
- This function doesn't return anything. If successful, four PDF files are created. HM and HM- are all subjects from sampleMeta and finalCounts, HMS and HMS- are only those in the test groups. The hyphen indicates a smaller unlabeled figure.
+ This function doesn't return anything. If successful, four PDF files are created. HM and HM- are all subjects from sampleMeta and finalCounts, HMS and HMS- are only those in the test groups. The hyphen indicates a smaller unlabeled figure. In each case the data is manipulated as in \code{GSEPD_Heatmap()} such that complete linkage clustering is performed on z-score normalized genes using the normalized counts directly from DESeq2::varianceStabilizingTransformation, which are displayed in the labeled figures. 
 }
 \examples{
   data("IlluminaBodymap")
@@ -35,7 +35,7 @@
                 COLORS=c("green","black","red"))    
   G <- GSEPD_ChangeConditions( G, c("A","B")) #set testing groups first!
   G <- GSEPD_Process( G ) #have to have processed results to plot them
-  GSEPD_DEGHeatmap(G)
+  GSEPD_DEGHeatmap(G) # all parameters automatic
   
 }
 \keyword{ plot }

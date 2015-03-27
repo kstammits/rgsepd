@@ -37,6 +37,7 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
 
   ExtractProjection <- function(DEG, Group1Set=c(1,2,3), Group2Set=c(4,5,6), DRAWING=FALSE, GN=c(1,2), PRINTING=FALSE,pchs=3,cols="black") {
     
+    #z-score normalization by gene of the samples' normalized counts:
     myPoints <- t(scale( t( finalCounts[DEG$REFSEQ,])))
     
     if(PRINTING) {
@@ -261,7 +262,7 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
                                            GSEPD$COLORS[2]))
       } ; rm(sMdata)
       
-      pdf(GSEPD_HMA_File(GSEPD), height=6+length(sr)/7,width=6+ncol(zOM)*0.25)
+      pdf(GSEPD_HMA_File(GSEPD), height=6+length(sr)/7,width=6+ncol(zOM)*0.33)
       heatmap.2(zOM[sr,], labRow=GONames[sr], scale="none", trace="none", margins=c(10,35),
                 cexRow=1.25,labCol=ColumnLabels,cellnote=cellnote[sr,],notecex=3,notecol="white",
                 ColSideColors=ColLabelColors, RowSideColors=RowLabelColors, col=GSEPD$COLORFUNCTION);

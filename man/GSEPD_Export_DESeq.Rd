@@ -14,9 +14,9 @@ GSEPD_Export_DESeq(G)
  The GSEPD list object to extract a DeseqDataSet from.}
 }
 \details{
- Using the given GSEPD object's finalCounts and sampleMeta, a simple DESeqDataSet object is created with the default design matrix.}
+ Using the given GSEPD object's finalCounts and sampleMeta, a simple DESeqDataSet object is created with the default design matrix. Provided for interoperability with other analysis packages.}
 \value{
-a DESeqDataSet
+an object of class DESeqDataSet
 }
 \references{
 DESeq2 }
