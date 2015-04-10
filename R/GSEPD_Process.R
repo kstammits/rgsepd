@@ -111,14 +111,16 @@ ProcessDESEQ <- function(G){
   Columns.B <- which(colnames(G$finalCounts) %in% 
                        subset(G$sampleMeta, G$sampleMeta$Condition==G$Conditions[2])$Sample)
 
-  if(length(Columns.A)>1)
+  if(length(Columns.A)>1){
     res$baseMeanA <- apply( G$normCounts[,Columns.A],1,mean) #but normCounts are logspace, so this mean is biased low...
-  else
+  }else{
     res$baseMeanA <- G$normCounts[,Columns.A] # mean of one element
-  if(length(Columns.B)>1)
+  }
+  if(length(Columns.B)>1){
     res$baseMeanB <- apply( G$normCounts[,Columns.B],1,mean)
-  else
+  }else{
     res$baseMeanB <- G$normCounts[,Columns.B] # mean of one element
+  }
 
   outfilename=paste(G$Output_Folder,"/DESEQ.Volcano.",G$C2T[1],".",G$C2T[2],".png",sep="")
   if(!G$QUIET)Message_Generate(outfilename)

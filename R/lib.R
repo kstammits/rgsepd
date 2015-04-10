@@ -5,7 +5,7 @@ pkg_globals <- new.env();
 
 .onAttach <- function(libname, pkgname) {
   packageStartupMessage(sprintf("Loading R/GSEPD %s",packageDescription("rgsepd")$Version))
-  packageStartupMessage("Building gene name caches")
+  packageStartupMessage("Building human gene name caches")
   
   #found the syntax for some kind of local/global variables here
   # http://stackoverflow.com/questions/12598242/global-variables-in-packages-in-r
@@ -260,11 +260,13 @@ AnnotateTable.GO <- function(G){
   
   pdf(plotFile)
   pwf= nullp(DEG, G$GOSEQ$genome, G$GOSEQ$system)
+  rownames(pwf)<-sdata$REFSEQ # we're calling goseq() with gene system 'refGene'
   GO.wall <- goseq(pwf, G$GOSEQ$genome,
    id=G$GOSEQ$system, use_genes_without_cat=G$GOSEQ$use_genes_without_cat)
   title(main="GOSeq pwf Allgenes")
   if(sum(DEG.up)>1) {
    pwf <- nullp(DEG.up, G$GOSEQ$genome, G$GOSEQ$system)
+   rownames(pwf)<-sdata$REFSEQ # we're calling goseq() with gene system 'refGene'
    GO.wall.Up <- goseq(pwf, G$GOSEQ$genome,
     id=G$GOSEQ$system, use_genes_without_cat=G$GOSEQ$use_genes_without_cat)
    title(main="GOSeq pwf Upreg")
@@ -273,6 +275,7 @@ AnnotateTable.GO <- function(G){
   }
   if(sum(DEG.dn)>1){
     pwf <- nullp(DEG.dn, G$GOSEQ$genome, G$GOSEQ$system)
+    rownames(pwf)<-sdata$REFSEQ # we're calling goseq() with gene system 'refGene'
     GO.wall.Dn <- goseq(pwf, genome=G$GOSEQ$genome,
     id=G$GOSEQ$system, use_genes_without_cat=G$GOSEQ$use_genes_without_cat)
     title(main="GOSeq pwf Downregulated genes.")
@@ -332,15 +335,16 @@ AnnotateTable.GO <- function(G){
   #this will pick whoever was first, probably wall.Dn, in the case of duplications.
 
   #okay awesome, let's make a table of those genes in GO.wall with over_represented_pvalue and genes in sdata 
-  OM=matrix(nrow=0,ncol=2); colnames(OM)<-c("category","ENTREZ");
+  OM=matrix(nrow=0,ncol=2); colnames(OM)<-c("category","REFSEQ");
   AllCategories <- unique( unlist(GO.wall$category) )
   for(gocat in AllCategories){
-    entrezs=cat2gene[[gocat]] #as vector of strings, but numeric entrez ids
-    entrezs=entrezs[entrezs %in% sdata$ENTREZ]
-    if(length(entrezs)>0)
-      OM=rbind(OM, cbind(rep(gocat,length(entrezs)), entrezs))
+    GID=cat2gene[[gocat]] #as vector of strings, but numeric entrez ids
+    GID=GID[GID %in% sdata$REFSEQ]
+    if(length(GID)>0)
+      OM=rbind(OM, cbind(rep(gocat,length(GID)), GID))
   }
-  merged=merge(OM,sdata,by="ENTREZ")
+  
+  merged=merge(OM,sdata,by="REFSEQ")
   #now making the GO2 file out of just the single GOseq. 
   merged <- merge(merged, GO.wall, by="category", all.x=TRUE)
   #count genes per category:
