@@ -1,6 +1,46 @@
-Version 0.99.15 bugfix in gene ID systems passed to goseq. 
-Version 0.99.12 expanding user manuals to clarify how figures and clustering is performed. 
-Version 0.99.11 bugfix in ProcessAll cardinality message. Error catching around PCA. Heatmap genelist now respects Annote_Filter file when LIMIT$HARD. Cleaned up warnings when no rows for HMA. Bugfix in PCA regarding non-negative definite covariance from princomp's eigen: replaced all instances with prcomp(). 
-Version 0.99.10 bugfix in G$LIMIT$baseMean and explanations of naming conventions in the vignette.
-Version 0.99.4 replacing DESeq with DESeq2 Fall2014
-Version 0 Release package. Fall 2014.
+CHANGES IN VERSION 0.99.15
+--------------------------
+
+BUG FIXES
+
+     o bugfix in gene ID systems passed to goseq. 
+
+CHANGES IN VERSION 0.99.12
+--------------------------
+
+NEW FEATURES
+
+     o expanding user manuals to clarify how figures and clustering is performed. 
+
+
+CHANGES IN VERSION 0.99.11
+---------------------------
+
+BUG FIXES
+
+     o bugfix in ProcessAll cardinality message. 
+     o Error catching around PCA. 
+     o Heatmap genelist now respects Annote_Filter file when LIMIT$HARD. 
+     o Cleaned up warnings when no rows for HMA. 
+     o Bugfix in PCA regarding non-negative definite covariance from princomp's eigen: replaced all instances with prcomp(). 
+
+CHANGES IN VERSION 0.99.10
+--------------------------
+
+BUG FIXES
+
+     o  bugfix in G$LIMIT$baseMean and explanations of naming conventions in the vignette.
+
+CHANGES IN VERSION 0.99.4
+-------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+     o replacing DESeq with DESeq2 Fall2014
+
+CHANGES IN VERSION 0.0.0
+------------------------
+
+NEW FEATURES
+
+     o Release package. Fall 2014.
