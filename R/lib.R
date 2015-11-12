@@ -134,7 +134,8 @@ biomaRt_Lookup <- function(res) {
 
   #now subset the table to those we didn't know yet.
   gns=unique( subset(res,is.na(res$ENTREZ))$id)
-  ensembl = useMart("ensembl")
+  #listMarts(host="www.ensembl.org")
+  ensembl = useMart("ENSEMBL_MART_ENSEMBL", host="www.ensembl.org")
   ensembl = useDataset("hsapiens_gene_ensembl",mart=ensembl)
   attrs=listAttributes(ensembl)
   aa=c("refseq_mrna" , "chromosome_name" , "start_position" ,  "end_position" ,
