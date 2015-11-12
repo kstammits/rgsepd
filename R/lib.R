@@ -327,8 +327,8 @@ AnnotateTable.GO <- function(G){
   test.cats = c("GO:CC", "GO:BP", "GO:MF")
   gene2cat = getgo(rownames(pwf), G$GOSEQ$genome,G$GOSEQ$system, fetch.cats = test.cats)
   names(gene2cat) = rownames(pwf)
-  cat2gene = reversemapping(gene2cat)
-  gene2cat = reversemapping(cat2gene)
+  cat2gene = reverseMap(gene2cat)
+  gene2cat = reverseMap(cat2gene)
   
   GO.wall <- rbind(GO.wall.Dn, GO.wall.Up, GO.wall) ; rm(GO.wall.Dn, GO.wall.Up)
   GO.wall <- subset(GO.wall, !(duplicated(GO.wall$category)))
