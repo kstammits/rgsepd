@@ -384,7 +384,7 @@ GSEPD_CheckCounts <- function(GSEPD) {
     #rld <- rlog()
     vsd <- DESeq2::varianceStabilizingTransformation(GSEPD_Export_DESeq(GSEPD))
     #rlogMat <- assay(rld)
-    vstMat <- GenomicRanges::assay(vsd)
+    vstMat <- assay(vsd)
     GSEPD$normCounts <- vstMat
   }
 GSEPD
