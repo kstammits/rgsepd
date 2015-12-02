@@ -1,8 +1,8 @@
 Package: rgsepd
 Type: Package
 Title: Gene Set Enrichment / Projection Displays
-Version: 1.3.3
-Date: 2015-11-12
+Version: 1.3.4
+Date: 2015-12-02
 Author: Karl Stamm
 Maintainer: Karl Stamm <karl.stamm@gmail.com>
 Description: R/GSEPD is a bioinformatics package for R to help
@@ -12,7 +12,7 @@ Description: R/GSEPD is a bioinformatics package for R to help
         N-dimensional projection to quantify in which ways each sample
         is like either treatment group. 
 Depends: R (>= 3.0.0), DESeq2, goseq (>= 1.17)
-Imports: gplots, biomaRt, org.Hs.eg.db, GO.db, GenomicRanges, hash,
+Imports: gplots, biomaRt, org.Hs.eg.db, GO.db, SummarizedExperiment, hash,
         AnnotationDbi
 Suggests: boot, tools, RUnit, BiocGenerics, knitr, xtable
 License: GPL-3

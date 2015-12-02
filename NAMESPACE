@@ -20,7 +20,7 @@ import(org.Hs.eg.db)
 import(AnnotationDbi)
 
 importFrom(gplots, heatmap.2)
-importFrom(GenomicRanges, assay)
+importFrom(SummarizedExperiment, assay)
 importFrom(hash,hash)
 importFrom(hash,values)
 
