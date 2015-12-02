@@ -344,7 +344,6 @@ AnnotateTable.GO <- function(G){
     if(length(GID)>0)
       OM=rbind(OM, cbind(rep(gocat,length(GID)), GID))
   }
-  
   merged=merge(OM,sdata,by="REFSEQ")
   #now making the GO2 file out of just the single GOseq. 
   merged <- merge(merged, GO.wall, by="category", all.x=TRUE)
@@ -352,7 +351,10 @@ AnnotateTable.GO <- function(G){
   Repetition <- table(merged$category)
   merged$GO_GCount <- Repetition[merged$category];
   if(!G$QUIET)Message_Generate(outfile2)
-  keepCol=c("REFSEQ","HGNC",G$C2T[1],G$C2T[2], "LOG2.X.Y.",  "PVAL",	"PADJ",	"category",	"over_represented_pvalue",	"under_represented_pvalue",	"numDEInCat",	"numInCat",	"Term",	"Ontology")
+  keepCol=c("REFSEQ","HGNC",G$C2T[1],G$C2T[2], "LOG2.X.Y.",  "PVAL",
+            "PADJ",	"category",	"over_represented_pvalue",	"under_represented_pvalue",
+            "numDEInCat",	"numInCat",	"Term",	"Ontology")
+ #keepCol[ !(keepCol %in% colnames(merged))]
   merged=subset(merged,merged$numInCat<800 |  merged$category %in% igo, select=keepCol)
   merged[,c(G$C2T[1],G$C2T[2], "LOG2.X.Y.")] = signif( merged[,c(G$C2T[1],G$C2T[2], "LOG2.X.Y.")], digits=3 )
   write.csv(merged,outfile2)
