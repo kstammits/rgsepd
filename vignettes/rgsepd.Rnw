@@ -228,12 +228,12 @@ print(xT, scalebox=0.80, include.rownames=TRUE)
 Gamma1_File <- read.csv("OUT/GSEPD.HMG1.Ax4.Bx8.csv",
                       header=TRUE,as.is=TRUE, nrows=20, row.names=1)
 xT<-xtable(head(Gamma1_File, n=10L)[,c(1,2,3,4,5,9,13)],
-           caption ="First ten rows of OUT/GSEPD.HMG1.Ax4.Bx8.csv showing the z-scaled distance to the Group1 centroid for each sample, these directly correspond to the colors in the HMG file. Where the HMG displays only significant sets, the Gamma table continues for all tested GO Terms. Both the Gamma1 and Gamma2 tables are summarized in Figure \\ref{fig:HMG}.", label = 'TableGamma1')
+           caption ="First ten rows of OUT/GSEPD.HMG1.Ax4.Bx8.csv showing the z-scaled distance to the Group1 centroid for each sample, these directly correspond to the colors in the HMG file. Where the HMG displays only significant sets, the Gamma table continues for all tested GO Terms. Both the Gamma1 and Gamma2 tables are summarized in Figure \\ref{fig:HMG}. As each row is a z-scored distance, zero indicates the mean distance of a sample to the 'A' group centroid. Negative numbers reflect closer than average, and positive farther.", label = 'TableGamma1')
 print(xT, scalebox=0.80, include.rownames=TRUE)
 Gamma2_File <- read.csv("OUT/GSEPD.HMG2.Ax4.Bx8.csv",
                       header=TRUE,as.is=TRUE, nrows=20, row.names=1)
 xT<-xtable(head(Gamma2_File, n=10L)[,c(1,2,3,4,5,9,13)],
-           caption ="First ten rows of OUT/GSEPD.HMG2.Ax4.Bx8.csv showing the z-scaled distance to the Group2 centroid for each sample, these directly correspond to the colors in the HMG file. Where the HMG displays only significant sets, the Gamma table continues for all tested GO Terms. Both the Gamma1 and Gamma2 tables are summarized in Figure \\ref{fig:HMG}.", label = 'TableGamma2')
+           caption ="First ten rows of OUT/GSEPD.HMG2.Ax4.Bx8.csv showing the z-scaled distance to the Group2 centroid for each sample, these directly correspond to the colors in the HMG file. Where the HMG displays only significant sets, the Gamma table continues for all tested GO Terms. Both the Gamma1 and Gamma2 tables are summarized in Figure \\ref{fig:HMG}. As each row is a z-scored distance, zero indicates the mean distance of a sample to the 'B' group centroid. Negative numbers reflect closer than average, and positive farther.", label = 'TableGamma2')
 print(xT, scalebox=0.80, include.rownames=TRUE)
 @
 

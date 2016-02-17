@@ -1,3 +1,12 @@
+CHANGES IN VERSION 1.3.6
+--------------------------
+FEATURE
+
+     o Simplified final output figure "HMG" and associated tables "HMG1" and "HMG2" calculate the distance to each centroid so the interpretation of results is simpler. Strong overlap to the HMA file.
+     o Entries in the Vignette for this new 2 table output. 
+
+
+
 CHANGES IN VERSION 1.3.4
 --------------------------
 BUG FIXES
