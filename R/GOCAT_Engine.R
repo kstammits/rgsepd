@@ -61,6 +61,11 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
     AA.s <- AA %*% uVectorBetween
     AS.s <- AS %*% uVectorBetween 
 
+    #then we can easily get the distance to each centroid
+    #AA is mean of gene expressions. genes are on the row of myPoints
+    Gamma1 <- apply(myPoints , 2, function(x) sqrt(sum(  (x-AA)^2  )))
+    Gamma2 <- apply(myPoints , 2, function(x) sqrt(sum(  (x-AS)^2  )))
+    
     xlim=c(min(AA[GN[1]],min(myPoints[GN[1],]),AS[GN[1]]), max(AA[GN[1]],max(myPoints[GN[1],]),AS[GN[1]]))+c(-0.5,0.5)
     ylim=c(min(AA[GN[2]],min(myPoints[GN[2],]),AS[GN[2]]), max(AA[GN[2]],max(myPoints[GN[2],]),AS[GN[2]]))+c(-0.5,0.5)
     #each one needs to get projected onto VectorBetween
@@ -73,13 +78,13 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
            xlim=xlim, ylim=ylim, main=DEG$Term.x[1] ) 
       text( x=cbind(AA, AS)[GN[1],] , y=cbind(AA, AS)[GN[2],], pos=1, labels=GSEPD$C2T)
     }
-    
     for(i in 1:ncol(myPoints)){ #across people
       scalarProjection <- (myPoints[,i]-AA) %*% (uVectorBetween)
       projected <- scalarProjection * uVectorBetween +AA; 
       distance_to_line[i] <- sqrt(sum( (myPoints[,i] - projected)^2))
       if(DRAWING==TRUE){
-        points(projected[GN[1]],projected[GN[2]], col="black", pch=2);
+        #dots along the line are pch=16
+        points(projected[GN[1]],projected[GN[2]], col="black", pch=16);
         points(myPoints[GN[1],i],myPoints[GN[2],i],col=cols[i], pch=pchs[i],cex=2)
         thisGuy <- GSEPD$sampleMeta$SHORTNAME[GSEPD$sampleMeta$Sample==colnames(myPoints)[i]]
         text( x=myPoints[GN[1],i] , y=myPoints[GN[2],i], pos=1, labels=thisGuy,cex=0.5)
@@ -113,6 +118,9 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
     x=list();
     x$alpha=alpha
     x$beta=distance_to_line / nrow(myPoints)
+    #adding a "gamma" so we can measure the distance to each centroid
+    x$gamma1=scale(Gamma1) # now -2 means on point
+    x$gamma2=scale(Gamma2) # and +2 means unusually far away
     x
   }
  
@@ -153,13 +161,15 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
   if(length(cats)>0) {
     message("Calculating Projections and Segregation Significance")
     OM=matrix(nrow=length(cats), ncol=ncol(finalCounts))
-    WhiteOut=matrix(nrow=length(cats), ncol=ncol(finalCounts))
+    WhiteOut=OM;  G1OM = OM;  G2OM = OM;
     Segregation_PV=rep(1,nrow(OM)) # see GSEPD$LIMIT$Seg_P later.
     Segregation_Val=rep(1,nrow(OM)) # see GSEPD$LIMIT$Seg_P later.
     
     colnames(WhiteOut)<-colnames(finalCounts)
     rownames(OM)<-cats
     rownames(WhiteOut)<-cats
+    rownames(G1OM)<-cats
+    rownames(G2OM)<-cats
     names(Segregation_PV)<- cats
     names(Segregation_Val)<- cats
     
@@ -167,18 +177,25 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
       ExDP <- AssembleGOSTAT(cats[i])$DataProjection
       OM[i,] <-ExDP$alpha
       WhiteOut[i,]<-ExDP$beta
+      G1OM[i,] <-ExDP$gamma1
+      G2OM[i,] <-ExDP$gamma2
       #Segregation_P[i] <- Resampled_Significance.t(GSEPD,data.frame(alpha=ExDP$alpha, type=GSEPD$sampleMeta$Condition ), GSEPD$Conditions)
-      O <- Resampled_Significance.k(GSEPD,ROI=M.data$REFSEQ[M.data$category==cats[i]],
-                                    SOI=ArcheTypes)
+      O <- Resampled_Significance.k(GSEPD, 
+                      ROI=M.data$REFSEQ[M.data$category==cats[i]],
+                      SOI=ArcheTypes)
       Segregation_PV[i] <- O$PV
       Segregation_Val[i] <- O$Validity
     }
     colnames(OM)<-colnames(finalCounts)
     colnames(WhiteOut)<-colnames(finalCounts)
-    
-    write.csv(OM  ,  paste(GSEPD$Output_Folder,"/GSEPD.Alpha.",C2T[1],".",C2T[2],".csv",sep=""))
-    write.csv(WhiteOut  ,  paste(GSEPD$Output_Folder,"/GSEPD.Beta.",C2T[1],".",C2T[2],".csv",sep=""))
+    colnames(G1OM)<-colnames(finalCounts)
+    colnames(G2OM)<-colnames(finalCounts)
+    SIGFIG=3
+    write.csv(signif(OM,SIGFIG)  ,  paste(GSEPD$Output_Folder,"/GSEPD.Alpha.",C2T[1],".",C2T[2],".csv",sep=""))
+    write.csv(signif(WhiteOut,SIGFIG)  ,  paste(GSEPD$Output_Folder,"/GSEPD.Beta.",C2T[1],".",C2T[2],".csv",sep=""))
     write.csv(cbind(Segregation_Val,Segregation_PV)  ,  GSEPD_Seg_File(GSEPD))
+    write.csv(signif(G1OM,SIGFIG)  ,  GSEPD_HMG1CSV_File(GSEPD))
+    write.csv(signif(G2OM,SIGFIG)  ,  GSEPD_HMG2CSV_File(GSEPD))
     
     GOPs <- rep(0,length(cats));
     GONames<-rep("",length(cats));    
@@ -217,12 +234,13 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
     
     OM.min <- apply(cbind(OM.A1,OM.A2),1,min)#*0.90
     OM.max <- apply(cbind(OM.A1,OM.A2),1,max)#*1.10
+    #Z-scored OutMatrix
     zOM <- OM-min(OM)+1;
     for(i in 1:nrow(zOM)){
       zOM[i, zOM[i,]< OM.min[i] ] <- OM.min[i]
       zOM[i, zOM[i,]> OM.max[i] ] <- OM.max[i]
       zOM[i,] <- (zOM[i,] - OM.min[i]) / (OM.max[i] - OM.min[i])
-    }
+    }#goes pretty much 0-1;
 
     #generate the asterisks you see in the heatmap
     #first lets get some Z-scores on the projection distance
@@ -249,9 +267,7 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
     #and remove those non-significant
     sr <- sr[ GO_SumPs[sr] <= (GSEPD$LIMIT$GO_PVAL  +  GSEPD$LIMIT$Seg_P)] ;
     
-    
     if(length(sr) > 1) {
-    
       RowLabelColors <- rep("black",length(sr));
       names(RowLabelColors)<-cats[sr]
       sMdata<-subset(M.data, !duplicated(M.data$category), select=c("category","GOSEQ_DEG_Type"))
@@ -263,12 +279,33 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
       } ; rm(sMdata)
       
       pdf(GSEPD_HMA_File(GSEPD), height=6+length(sr)/7,width=6+ncol(zOM)*0.33)
-      heatmap.2(zOM[sr,], labRow=GONames[sr], scale="none", trace="none", margins=c(10,35),
-                cexRow=1.25,labCol=ColumnLabels,cellnote=cellnote[sr,],notecex=3,notecol="white",
-                ColSideColors=ColLabelColors, RowSideColors=RowLabelColors, col=GSEPD$COLORFUNCTION);
+      heatmap.2(zOM[sr,], labRow=GONames[sr],
+            scale="none", trace="none", margins=c(10,35),
+            cexRow=1.25,labCol=ColumnLabels,cellnote=cellnote[sr,],
+            notecex=3,notecol="white",
+            ColSideColors=ColLabelColors, RowSideColors=RowLabelColors,
+            col=GSEPD$COLORFUNCTION);
       dev.off()
+      
+      #then plot HMG#####
+      #it's overlaying the zOM
+      #but for the HMG file now I need to make a new 0-1 score from the G1OM/G2OM matrices.
+      zOM[,] <- 0.5 ; #default all to indeterminate/black
+      zOM[G1OM < 0] <- 0.35 #dark green
+      zOM[G1OM < -0.5 ] <- 0 # bright green
+      zOM[G2OM < 0] <- 0.65 # dark red
+      zOM[G2OM < -0.5 ] <- 1 # bright red
+                   
+      pdf(GSEPD_HMG_File(GSEPD), height=6+length(sr)/7,width=6+ncol(zOM)*0.33)
+      heatmap.2(zOM[sr,], labRow=GONames[sr],
+                scale="none", trace="none", margins=c(10,35),
+                cexRow=1.25,labCol=ColumnLabels,
+                ColSideColors=ColLabelColors, RowSideColors=RowLabelColors,
+                col=GSEPD$COLORFUNCTION);
+      dev.off()
+      
     }else{
-      warning("Not generating HMA file:  <2 significant rows. See your GOSEQ and Segregation tables for details.")
+      warning("Not generating HMA/HMG files:  <2 significant rows. See your GOSEQ and Segregation tables for details.")
     }
     
     #for the rows seen in the heatmap...
@@ -281,7 +318,8 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
         if(nGenes>1){
           if(nGenes==3){
             ExtractProjection(DEG=thisDEG, Group1Set=G1, Group2Set=G2,
-                              DRAWING=TRUE, GN=unique(thisDEG$REFSEQ), PRINTING=FALSE,
+                              DRAWING=TRUE, GN=unique(thisDEG$REFSEQ),
+                              PRINTING=FALSE,
                               pchs=pchs,cols=cols)
           }else{ #otherwise, list them in pairs
             for(i in seq(1,length(unique(thisDEG$REFSEQ))-1,2))
@@ -299,5 +337,4 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
   }
 
 }  # end GOCATPROCESSOR for Type1, Type2
-
 

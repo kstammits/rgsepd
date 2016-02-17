@@ -59,6 +59,13 @@ GSEPD_Seg_File <- function(G)
   paste(G$Output_Folder,"/GSEPD.Segregation_P." , G$C2T[1],".",G$C2T[2],".csv",sep="")
 GSEPD_HMACSV_File <- function(G) 
   paste(G$Output_Folder,"/GSEPD.HMA." , G$C2T[1],".",G$C2T[2],".csv",sep="")
+#new for 2016, let's calculate the distance to each centroid. 
+GSEPD_HMG_File <- function(G) 
+  paste(G$Output_Folder,"/GSEPD.HMG." , G$C2T[1],".",G$C2T[2],".pdf",sep="")
+GSEPD_HMG1CSV_File <- function(G) 
+  paste(G$Output_Folder,"/GSEPD.HMG1." , G$C2T[1],".",G$C2T[2],".csv",sep="")
+GSEPD_HMG2CSV_File <- function(G) 
+  paste(G$Output_Folder,"/GSEPD.HMG2." , G$C2T[1],".",G$C2T[2],".csv",sep="")
 
 
 FileMerge<-function(GSEPD){
