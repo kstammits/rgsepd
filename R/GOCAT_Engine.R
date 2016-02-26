@@ -65,6 +65,11 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
     #AA is mean of gene expressions. genes are on the row of myPoints
     Gamma1 <- apply(myPoints , 2, function(x) sqrt(sum(  (x-AA)^2  )))
     Gamma2 <- apply(myPoints , 2, function(x) sqrt(sum(  (x-AS)^2  )))
+    #theyre NOT zero-one yet.
+    #scale by the distance between them 
+    #so it's in units of (AA to AS)
+    Gamma1 <- Gamma1 / (sqrt(sum(VectorBetween^2))) ; 
+    Gamma2 <- Gamma2 / (sqrt(sum(VectorBetween^2))) ; 
     
     xlim=c(min(AA[GN[1]],min(myPoints[GN[1],]),AS[GN[1]]), max(AA[GN[1]],max(myPoints[GN[1],]),AS[GN[1]]))+c(-0.5,0.5)
     ylim=c(min(AA[GN[2]],min(myPoints[GN[2],]),AS[GN[2]]), max(AA[GN[2]],max(myPoints[GN[2],]),AS[GN[2]]))+c(-0.5,0.5)
@@ -119,8 +124,8 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
     x$alpha=alpha
     x$beta=distance_to_line / nrow(myPoints)
     #adding a "gamma" so we can measure the distance to each centroid
-    x$gamma1=scale(Gamma1) # now -2 means on point
-    x$gamma2=scale(Gamma2) # and +2 means unusually far away
+    x$gamma1=Gamma1
+    x$gamma2=Gamma2
     x
   }
  
@@ -291,10 +296,10 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
       #it's overlaying the zOM
       #but for the HMG file now I need to make a new 0-1 score from the G1OM/G2OM matrices.
       zOM[,] <- 0.5 ; #default all to indeterminate/black
-      zOM[G1OM < 0] <- 0.35 #dark green
-      zOM[G1OM < -0.5 ] <- 0 # bright green
-      zOM[G2OM < 0] <- 0.65 # dark red
-      zOM[G2OM < -0.5 ] <- 1 # bright red
+      zOM[G1OM < 0.45] <- 0.35 #dark green
+      zOM[G1OM < (0.45*(2/3)) ] <- 0 # bright green
+      zOM[G2OM < 0.45] <- 0.65 # dark red
+      zOM[G2OM < (0.45*(2/3)) ] <- 1 # bright red
                    
       pdf(GSEPD_HMG_File(GSEPD), height=6+length(sr)/7,width=6+ncol(zOM)*0.33)
       heatmap.2(zOM[sr,], labRow=GONames[sr],

@@ -1,3 +1,11 @@
+CHANGES IN VERSION 1.3.8
+--------------------------
+FEATURE
+
+     o Adjusting the color thresholds for HMG diagram and Gamma scores to be properly scaled by dimensionality. Previous z-scoring method was occasionally making errors. Now a Gamma score of 1 indicates the distance between centroids, which would otherwise naturally scale by the square root of the geneset dimension. 
+     o Updated Vignette
+
+
 CHANGES IN VERSION 1.3.6
 --------------------------
 FEATURE
