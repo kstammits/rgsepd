@@ -268,13 +268,14 @@ AnnotateTable.GO <- function(G){
   
   pdf(plotFile)
   pwf= nullp(DEG, G$GOSEQ$genome, G$GOSEQ$system)
-  rownames(pwf)<-sdata$REFSEQ # we're calling goseq() with gene system 'refGene'
+  #rownames(pwf)<-sdata$REFSEQ # we're calling goseq() with gene system 'refGene'
+  #error. 
   GO.wall <- goseq(pwf, G$GOSEQ$genome,
    id=G$GOSEQ$system, use_genes_without_cat=G$GOSEQ$use_genes_without_cat)
   title(main="GOSeq pwf Allgenes")
   if(sum(DEG.up)>1) {
    pwf <- nullp(DEG.up, G$GOSEQ$genome, G$GOSEQ$system)
-   rownames(pwf)<-sdata$REFSEQ # we're calling goseq() with gene system 'refGene'
+   #rownames(pwf)<-sdata$REFSEQ # we're calling goseq() with gene system 'refGene'
    GO.wall.Up <- goseq(pwf, G$GOSEQ$genome,
     id=G$GOSEQ$system, use_genes_without_cat=G$GOSEQ$use_genes_without_cat)
    title(main="GOSeq pwf Upreg")
@@ -283,7 +284,7 @@ AnnotateTable.GO <- function(G){
   }
   if(sum(DEG.dn)>1){
     pwf <- nullp(DEG.dn, G$GOSEQ$genome, G$GOSEQ$system)
-    rownames(pwf)<-sdata$REFSEQ # we're calling goseq() with gene system 'refGene'
+    #rownames(pwf)<-sdata$REFSEQ # we're calling goseq() with gene system 'refGene'
     GO.wall.Dn <- goseq(pwf, genome=G$GOSEQ$genome,
     id=G$GOSEQ$system, use_genes_without_cat=G$GOSEQ$use_genes_without_cat)
     title(main="GOSeq pwf Downregulated genes.")
@@ -343,15 +344,17 @@ AnnotateTable.GO <- function(G){
   #this will pick whoever was first, probably wall.Dn, in the case of duplications.
 
   #okay awesome, let's make a table of those genes in GO.wall with over_represented_pvalue and genes in sdata 
-  OM=matrix(nrow=0,ncol=2); colnames(OM)<-c("category","REFSEQ");
+  OM=matrix(nrow=0,ncol=2); colnames(OM)<-c("category","ENTREZ");
   AllCategories <- unique( unlist(GO.wall$category) )
   for(gocat in AllCategories){
     GID=cat2gene[[gocat]] #as vector of strings, but numeric entrez ids
-    GID=GID[GID %in% sdata$REFSEQ]
+    GID=GID[GID %in% sdata$ENTREZ]
     if(length(GID)>0)
       OM=rbind(OM, cbind(rep(gocat,length(GID)), GID))
   }
-  merged=merge(OM,sdata,by="REFSEQ")
+  head(OM)
+  
+  merged=merge(OM,sdata,by="ENTREZ")
   #now making the GO2 file out of just the single GOseq. 
   merged <- merge(merged, GO.wall, by="category", all.x=TRUE)
   #count genes per category:

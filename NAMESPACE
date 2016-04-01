@@ -24,3 +24,11 @@ importFrom(SummarizedExperiment, assay)
 importFrom(hash,hash)
 importFrom(hash,values)
 
+importFrom("grDevices", "colorRampPalette", "dev.off", "pdf", "png")
+importFrom("graphics", "hist", "legend", "lines", "mtext", "pairs",
+             "plot", "points", "text", "title")
+importFrom("stats", "kmeans", "median", "prcomp", "relevel", "runif",
+             "sd", "var")
+importFrom("utils", "packageDescription", "read.csv", "write.csv",
+             "write.table")
+

@@ -86,7 +86,7 @@ GSEPD_INIT <- function( Output_Folder="OUT" ,finalCounts=NULL, sampleMeta=NULL,
   #theoretically you can change the background used for goseq
   #but i've only ever used/tested Entrez IDs on hg19
   GSEPD$GOSEQ <- list(genome="hg19" ,
-                      system="refGene",
+                      system="knownGene",
                       use_genes_without_cat=TRUE)
   
   return(GSEPD)
