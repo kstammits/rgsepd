@@ -47,6 +47,7 @@ New York, NY 10027 },
  
 
 \begin{document}
+%\SweaveOpts{concordance=TRUE}
 
 \title{R/GSEPD Tutorial \\ Gene Set Enrichment and Projection Displays}
 \author{Karl Stamm \--- karl.stamm@gmail.com \--- }
@@ -291,9 +292,6 @@ PPairs_File <- substring(PPairs_File,0,nchar(PPairs_File)-4)
     \label{fig:Scatter}
 \end{figure}
 
-
-\section*{References}
-The citation for GSEPD is not available, as the article is under revision.
 
 \printbibliography
 

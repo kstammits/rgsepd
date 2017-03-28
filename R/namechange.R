@@ -30,13 +30,13 @@ Name_to_RefSeq <- function(x){
   hash::values(get("H2R", pkg_globals)[x])
 }
 
-DisplayName <- function(NM){
-  if(length(NM)>1)
-    return(unlist(lapply(NM,DisplayName)))
-  if(length(NM)==0)
+DisplayName <- function(txid){
+  if(length(txid)>1)
+    return(unlist(lapply(txid,DisplayName)))
+  if(length(txid)==0)
     return("NA")
   #else; do one:
-  hash::values(get("R2H", pkg_globals)[NM])
+  hash::values(get("R2H", pkg_globals)[txid])
 }
 
 

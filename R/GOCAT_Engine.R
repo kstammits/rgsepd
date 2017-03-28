@@ -1,9 +1,7 @@
 ###
-###
-# Summer 2013 - 2014
-# rgsepd-0.3.3 KStamm 
-# a tool to perform linear vector projection in GO-Term space
-# i apologize about it being a single 300 line method
+## Summer 2013 - 2014
+## rgsepd-0.3.3 KStamm 
+## a tool to perform linear vector projection in GO-Term space
 ###
 
 GSEPD_ProjectionProcessor <- function(GSEPD) {
@@ -18,8 +16,8 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
   
   DefinedGroup <- subset(sampleMeta, sampleMeta$Condition %in% c(Type1, Type2))
   ArcheTypes <- as.character(DefinedGroup$Sample)
-  G1=ArcheTypes[DefinedGroup$Condition==Type1];
-  G2=ArcheTypes[DefinedGroup$Condition==Type2]
+  G1=ArcheTypes[DefinedGroup$Condition == Type1];
+  G2=ArcheTypes[DefinedGroup$Condition == Type2]
   cols=rep(1,ncol(finalCounts))
   pchs=rep(3,ncol(finalCounts))
   
@@ -46,7 +44,7 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
       print(GN)
       print(Group1Set)
     }
-    if(length(Group1Set)>1)
+    if(length(Group1Set) > 1)
       AA <- apply(myPoints[,Group1Set],1,mean)#take the mean
     else
       AA <- myPoints[,Group1Set]#take the mean
@@ -71,15 +69,18 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
     Gamma1 <- Gamma1 / (sqrt(sum(VectorBetween^2))) ; 
     Gamma2 <- Gamma2 / (sqrt(sum(VectorBetween^2))) ; 
     
-    xlim=c(min(AA[GN[1]],min(myPoints[GN[1],]),AS[GN[1]]), max(AA[GN[1]],max(myPoints[GN[1],]),AS[GN[1]]))+c(-0.5,0.5)
-    ylim=c(min(AA[GN[2]],min(myPoints[GN[2],]),AS[GN[2]]), max(AA[GN[2]],max(myPoints[GN[2],]),AS[GN[2]]))+c(-0.5,0.5)
+    xlim=c(min(AA[GN[1]],min(myPoints[GN[1],]),AS[GN[1]]),
+           max(AA[GN[1]],max(myPoints[GN[1],]),AS[GN[1]]))+c(-0.5,0.5)
+    ylim=c(min(AA[GN[2]],min(myPoints[GN[2],]),AS[GN[2]]),
+           max(AA[GN[2]],max(myPoints[GN[2],]),AS[GN[2]]))+c(-0.5,0.5)
     #each one needs to get projected onto VectorBetween
     alpha=rep(NA,ncol(myPoints)) # a 0-100% scale along the line
     distance_to_line=rep(NA,ncol(myPoints)) #a sample's divergence from the mean/mean line
     
     if(DRAWING==TRUE){
       plot(cbind(AA, AS)[GN[1],] , cbind(AA, AS)[GN[2],] , type="l", lwd=2,
-           xlab=paste(DEG$HGNC[GN[1]],"Z-Score Norm Counts"), ylab=paste(DEG$HGNC[GN[2]],"Z-Score Norm Counts") , 
+           xlab=paste(DEG$HGNC[GN[1]],"Z-Score Norm Counts"),
+           ylab=paste(DEG$HGNC[GN[2]],"Z-Score Norm Counts"), 
            xlim=xlim, ylim=ylim, main=DEG$Term.x[1] ) 
       text( x=cbind(AA, AS)[GN[1],] , y=cbind(AA, AS)[GN[2],], pos=1, labels=GSEPD$C2T)
     }
@@ -102,9 +103,9 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
     }
     
     #unknown bug has alpha not scaled 0-1. let's do it again.
-    alpha_G1 <- mean(alpha[which(colnames(myPoints)%in%Group1Set)]) ;
+    alpha_G1 <- mean(alpha[which(colnames(myPoints) %in% Group1Set)]) ;
     alpha=alpha-alpha_G1
-    alpha_G2 <- mean(alpha[which(colnames(myPoints)%in%Group2Set)]) ;
+    alpha_G2 <- mean(alpha[which(colnames(myPoints) %in% Group2Set)]) ;
     alpha=alpha/alpha_G2
     
     if(DRAWING==TRUE){
@@ -166,7 +167,7 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
   if(length(cats)>0) {
     message("Calculating Projections and Segregation Significance")
     OM=matrix(nrow=length(cats), ncol=ncol(finalCounts))
-    WhiteOut=OM;  G1OM = OM;  G2OM = OM;
+    WhiteOut <- OM;  G1OM <- OM;  G2OM <- OM;
     Segregation_PV=rep(1,nrow(OM)) # see GSEPD$LIMIT$Seg_P later.
     Segregation_Val=rep(1,nrow(OM)) # see GSEPD$LIMIT$Seg_P later.
     
@@ -196,18 +197,18 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
     colnames(G1OM)<-colnames(finalCounts)
     colnames(G2OM)<-colnames(finalCounts)
     SIGFIG=3
-    write.csv(signif(OM,SIGFIG)  ,  paste(GSEPD$Output_Folder,"/GSEPD.Alpha.",C2T[1],".",C2T[2],".csv",sep=""))
-    write.csv(signif(WhiteOut,SIGFIG)  ,  paste(GSEPD$Output_Folder,"/GSEPD.Beta.",C2T[1],".",C2T[2],".csv",sep=""))
-    write.csv(cbind(Segregation_Val,Segregation_PV)  ,  GSEPD_Seg_File(GSEPD))
-    write.csv(signif(G1OM,SIGFIG)  ,  GSEPD_HMG1CSV_File(GSEPD))
-    write.csv(signif(G2OM,SIGFIG)  ,  GSEPD_HMG2CSV_File(GSEPD))
+    write.csv(signif(OM,SIGFIG), paste(GSEPD$Output_Folder, "/GSEPD.Alpha.", C2T[1],".",C2T[2],".csv",sep=""))
+    write.csv(signif(WhiteOut,SIGFIG), paste(GSEPD$Output_Folder, "/GSEPD.Beta.", C2T[1],".",C2T[2],".csv",sep=""))
+    write.csv(cbind(Segregation_Val, Segregation_PV), GSEPD_Seg_File(GSEPD))
+    write.csv(signif(G1OM,SIGFIG), GSEPD_HMG1CSV_File(GSEPD))
+    write.csv(signif(G2OM,SIGFIG), GSEPD_HMG2CSV_File(GSEPD))
     
-    GOPs <- rep(0,length(cats));
-    GONames<-rep("",length(cats));    
+    GOPs <- rep(0,length(cats))
+    GONames <- rep("",length(cats))
     for(i in 1:length(cats)) { 
-      roi <- (M.data$category==cats[i]) #find the entry in Mdata
-      GONames[i]<-sprintf("%s %s",M.data$Term.x[roi][1], M.data$category[roi][1]); 
-      GOPs[i]<-M.data$over_represented_pvalue.x[roi][1];
+      roi <- (M.data$category == cats[i]) #find the entry in Mdata
+      GONames[i] <- sprintf("%s %s",M.data$Term.x[roi][1], M.data$category[roi][1]); 
+      GOPs[i] <- M.data$over_represented_pvalue.x[roi][1];
       #if this GOSet fails to separate the classes, we can drop it from further processing
       if( Segregation_PV[i] < GSEPD$LIMIT$Seg_P){
         #if it segregates let's make a pairs plot to go with
@@ -228,12 +229,12 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
     Message_Generate(GSEPD_HMA_File(GSEPD))
    
     if(length(G1)>1 && nrow(OM)>1)
-      OM.A1 <- apply( OM[,G1], 1, mean)-min(OM)+1
+      OM.A1 <- apply(OM[,G1], 1, mean)-min(OM)+1
     else
       OM.A1 <-OM[,G1] - min(OM)+1
     
     if(length(G2)>1 && nrow(OM)>1)
-      OM.A2 <- apply( OM[,G2], 1, mean)-min(OM)+1
+      OM.A2 <- apply(OM[,G2], 1, mean)-min(OM)+1
     else
       OM.A2 <-OM[,G2] - min(OM)+1
     
@@ -262,7 +263,7 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
                                sampleMeta$Condition[sampleMeta$Sample==ColumnLabels[j]])
     
     ColLabelColors <- rep("black",ncol(OM));
-    names(ColLabelColors)<-colnames(OM)
+    names(ColLabelColors) <- colnames(OM)
     ColLabelColors[G1] <- GSEPD$COLORS[1];
     ColLabelColors[G2] <- GSEPD$COLORS[3];
     
@@ -270,24 +271,24 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
     sr=1:length(GO_SumPs) 
     sr=sort(GO_SumPs, decreasing=FALSE, index.return=TRUE)$ix[1:min(GSEPD$MAX_GOs_for_Heatmap,length(cats))]
     #and remove those non-significant
-    sr <- sr[ GO_SumPs[sr] <= (GSEPD$LIMIT$GO_PVAL  +  GSEPD$LIMIT$Seg_P)] ;
+    sr <- sr[ GO_SumPs[sr] <= (GSEPD$LIMIT$GO_PVAL + GSEPD$LIMIT$Seg_P)] ;
     
     if(length(sr) > 1) {
       RowLabelColors <- rep("black",length(sr));
       names(RowLabelColors)<-cats[sr]
       sMdata<-subset(M.data, !duplicated(M.data$category), select=c("category","GOSEQ_DEG_Type"))
       for(j in 1:length(sr)){
-        cj<-cats[sr[j]];DEGType<-sMdata$GOSEQ_DEG_Type[sMdata$category==cj];
-        RowLabelColors[j] <- ifelse(DEGType=="Up",GSEPD$COLORS[3],
-                                    ifelse(DEGType=="Down",GSEPD$COLORS[1],
+        cj<-cats[sr[j]];DEGType<-sMdata$GOSEQ_DEG_Type[sMdata$category == cj];
+        RowLabelColors[j] <- ifelse(DEGType == "Up",GSEPD$COLORS[3],
+                                    ifelse(DEGType == "Down",GSEPD$COLORS[1],
                                            GSEPD$COLORS[2]))
       } ; rm(sMdata)
       
-      pdf(GSEPD_HMA_File(GSEPD), height=6+length(sr)/7,width=6+ncol(zOM)*0.33)
+      pdf(GSEPD_HMA_File(GSEPD), height=6+length(sr)/7, width=6+ncol(zOM)*0.33)
       heatmap.2(zOM[sr,], labRow=GONames[sr],
             scale="none", trace="none", margins=c(10,35),
-            cexRow=1.25,labCol=ColumnLabels,cellnote=cellnote[sr,],
-            notecex=3,notecol="white",
+            cexRow=1.25, labCol=ColumnLabels, cellnote=cellnote[sr,],
+            notecex=3, notecol="white",
             ColSideColors=ColLabelColors, RowSideColors=RowLabelColors,
             col=GSEPD$COLORFUNCTION);
       dev.off()
@@ -301,7 +302,7 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
       zOM[G2OM < 0.45] <- 0.65 # dark red
       zOM[G2OM < (0.45*(2/3)) ] <- 1 # bright red
                    
-      pdf(GSEPD_HMG_File(GSEPD), height=6+length(sr)/7,width=6+ncol(zOM)*0.33)
+      pdf(GSEPD_HMG_File(GSEPD), height=6+length(sr)/7, width=6+ncol(zOM)*0.33)
       heatmap.2(zOM[sr,], labRow=GONames[sr],
                 scale="none", trace="none", margins=c(10,35),
                 cexRow=1.25,labCol=ColumnLabels,
@@ -318,7 +319,7 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
       thisDEG=subset(M.data, M.data$category==cats[j])
       if( nrow(thisDEG) >= GSEPD$MinGenesInSet ) { 
 #thought this would be taken care of above, but the GO term whitelist could create entries with invalid gene counts.
-        pdf(paste(GSEPD$Output_SCGO,"/GSEPD.",C2T[1],".",C2T[2],".GO",substring(cats[j],4),".pdf",sep=""))
+        pdf(paste(GSEPD$Output_SCGO,"/GSEPD.", C2T[1],".",C2T[2],".GO",substring(cats[j],4),".pdf",sep=""))
         nGenes=length(unique(thisDEG$REFSEQ))
         if(nGenes>1){
           if(nGenes==3){

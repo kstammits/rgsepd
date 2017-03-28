@@ -106,7 +106,7 @@ Contingency_Matrix <- function(GSEPD, G1,G2){
   #Group1 and Group2 are Sample names for Conditions1 and 2.
   Con<-GSEPD$sampleMeta$Condition
   names(Con)<-GSEPD$sampleMeta$Sample
-  T1 <- c(sum(Con[G1]==GSEPD$Conditions[1]), sum(Con[G1]==GSEPD$Conditions[2]))
-  T2 <- c(sum(Con[G2]==GSEPD$Conditions[1]), sum(Con[G2]==GSEPD$Conditions[2]))
+  T1 <- c(sum(Con[G1] == GSEPD$Conditions[1]), sum(Con[G1] == GSEPD$Conditions[2]))
+  T2 <- c(sum(Con[G2] == GSEPD$Conditions[1]), sum(Con[G2] == GSEPD$Conditions[2]))
   rbind(T1,T2)
 }

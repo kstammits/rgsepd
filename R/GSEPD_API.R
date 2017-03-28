@@ -1,7 +1,7 @@
 
 GSEPD_ChangeConditions <- function(GSEPD, newConditions){
   if(length(newConditions)==2){
-    samples_conds <-  GSEPD$sampleMeta$Condition[GSEPD$sampleMeta$Condition %in% newConditions]
+    samples_conds <-  as.character(GSEPD$sampleMeta$Condition[GSEPD$sampleMeta$Condition %in% newConditions])
     tconds=table(samples_conds)
     if(any(tconds)<1){#check that we're not missing any
       missingno <- names(tconds[tconds<1])[1]
@@ -9,9 +9,9 @@ GSEPD_ChangeConditions <- function(GSEPD, newConditions){
                     newConditions[1],newConditions[2],missingno)
       stop(om)
     }
-    conds=paste(samples_conds,tconds[samples_conds],sep=GSEPD$C2T_Delimiter)
+    conds=paste(samples_conds, tconds[samples_conds], sep=GSEPD$C2T_Delimiter)
     GSEPD$Conditions <- sort(newConditions)
-    GSEPD$C2T<- sort(unique( as.character( factor(conds))  ))
+    GSEPD$C2T<- sort(unique( as.character(factor(conds))  ))
     return(GSEPD)
   }else{
     stop("must specify two conditions")

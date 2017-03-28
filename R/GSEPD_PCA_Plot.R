@@ -132,6 +132,7 @@ GSEPD_PCA_Spec <- function(GSEPD, GOT, MDATA=NULL){
   }
   else
     M.data <- MDATA
+  
   HGNC <- hash(M.data$REFSEQ, M.data$HGNC)
   roi <- (M.data$category==GOT) #find the entry in Mdata
   GOName<-sprintf("%s %s",M.data$Term.x[roi][1], M.data$category[roi][1]); 

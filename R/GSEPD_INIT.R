@@ -11,6 +11,8 @@ GSEPD_INIT <- function( Output_Folder="OUT" ,finalCounts=NULL, sampleMeta=NULL,
     if(is.null(finalCounts) || is.null(sampleMeta)){
       stop(" not enough data given, you must specify either DESeqDataSet or finalCounts and sampleMeta")
     }else{#this would be a nice place to sanity check
+      sampleMeta$Sample <- as.character(sampleMeta$Sample)
+      sampleMeta$Condition <- as.character(sampleMeta$Condition)
       GSEPD$finalCounts <- finalCounts
       GSEPD$sampleMeta <- sampleMeta
     }
@@ -49,7 +51,7 @@ GSEPD_INIT <- function( Output_Folder="OUT" ,finalCounts=NULL, sampleMeta=NULL,
                       GO_PVAL=0.050, # defines which pathways are to be included in the heatmap figure (MERGE.over_represented_pvalue < x)                      
                       Seg_P=0.050 ) #only PCA/Scatter plot those GOSets with segregating ability.
   
-  GSEPD$Segregation_Precision=0.01 #about how certain do we have to be in the permuted kmeans. We'll empirically calculate between 1 and 4 times the reciprocal of this number. See GroupSignificance.R for permutation loops.
+  GSEPD$Segregation_Precision <- 0.01 #about how certain do we have to be in the permuted kmeans. We'll empirically calculate between 1 and 4 times the reciprocal of this number. See GroupSignificance.R for permutation loops.
 
   GSEPD$MAX_GOs_for_Heatmap <- 40 #caps the size of the final heatmap to only the N most significant sets (by GOP+SegP)
   
@@ -88,6 +90,11 @@ GSEPD_INIT <- function( Output_Folder="OUT" ,finalCounts=NULL, sampleMeta=NULL,
   GSEPD$GOSEQ <- list(genome="hg19" ,
                       system="knownGene",
                       use_genes_without_cat=TRUE)
+  
+  GSEPD$GeneIDSystem <- list(Transcript="REFSEQ",
+                             GeneID="ENTREZ",
+                             GeneName="HGNC")
+  
   
   return(GSEPD)
 }

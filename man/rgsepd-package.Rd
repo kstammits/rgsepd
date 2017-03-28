@@ -14,8 +14,8 @@ See the Vignette for usage examples, and minimal examples within each function's
 \tabular{ll}{
 Package: \tab rgsepd\cr
 Type: \tab Package\cr
-Version: \tab 0.99.9\cr
-Date: \tab 2014-11-21\cr
+Version: \tab 1.7.1\cr
+Date: \tab 2017-03-26\cr
 License: \tab GPL-3\cr
 }
 
@@ -24,7 +24,7 @@ License: \tab GPL-3\cr
 Karl D. Stamm <karl.stamm@gmail.com>
 }
 \references{
-Wrapper for DESeq2 and GOSeq. }
+Initially a wrapper for DESeq2 and GOSeq, late-stage processing continues with a unique geneset based sample clustering. }
 \keyword{ package }
 \seealso{
 

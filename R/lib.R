@@ -267,7 +267,7 @@ AnnotateTable.GO <- function(G){
   names(DEG.dn) <- sdata$ENTREZ;
   
   pdf(plotFile)
-  pwf= nullp(DEG, G$GOSEQ$genome, G$GOSEQ$system)
+  pwf <- nullp(DEG, G$GOSEQ$genome, G$GOSEQ$system)
   #rownames(pwf)<-sdata$REFSEQ # we're calling goseq() with gene system 'refGene'
   #error. 
   GO.wall <- goseq(pwf, G$GOSEQ$genome,
