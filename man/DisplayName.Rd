@@ -4,14 +4,14 @@
 \title{
 DisplayName}
 \description{
-Convert a NM## id number to the corresponding HGNC Gene name, where available.}
+Convert a transcript id number to the corresponding gene name, where available.}
 \usage{
-DisplayName(NM)
+DisplayName(txid)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{NM}{
-The NM_### id number, or a vector thereof.}
+  \item{txid}{
+The transcript id number, or a vector thereof.}
 }
 
 \value{
