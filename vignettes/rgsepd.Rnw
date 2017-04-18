@@ -74,6 +74,7 @@ In \verb,R,, column names are not allowed to have spaces or certain special char
 
 <<dataload>>=
 library(rgsepd)
+set.seed(1000) #fixed randomness
 data("IlluminaBodymap" , package="rgsepd")
 data("IlluminaBodymapMeta" , package="rgsepd")
 @
@@ -93,7 +94,6 @@ Next we'll sub-select $1,000$ genes from this set for speed.  Initialize the GSE
 
 
 <<setup>>=
-set.seed(1000) #fixed randomness
 isoform_ids <- Name_to_RefSeq(c("GAPDH","HIF1A","EGFR","MYH7","CD33","BRCA2"))
 rows_of_interest <- unique( c( isoform_ids ,
                     sample(rownames(IlluminaBodymap),
