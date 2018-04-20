@@ -1,9 +1,10 @@
-CHANGES IN VERSION 1.11.1
+CHANGES IN VERSION 1.11.2
 --------------------------
 BUG FIXES
     o updating dependencies caused a crash. Investigating.
       Biomart seems to no longer support "hsapiens_gene_ensembl" (sometimes/bug)
       Intermittent bug fixed in a later biomaRt edition.
+    o R 3.5.0 support calls for a tweak in GOCatEngine.R
 
 
 CHANGES IN VERSION 1.7.1

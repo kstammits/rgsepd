@@ -86,6 +86,7 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
     }
     for(i in 1:ncol(myPoints)){ #across people
       scalarProjection <- c((myPoints[,i]-AA) %*% (uVectorBetween))
+      scalarProjection <- as.vector(scalarProjection)# new in R 3.5.0
       projected <- scalarProjection * uVectorBetween +AA; 
       distance_to_line[i] <- sqrt(sum( (myPoints[,i] - projected)^2))
       if(DRAWING==TRUE){
