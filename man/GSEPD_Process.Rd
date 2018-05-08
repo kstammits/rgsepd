@@ -30,7 +30,7 @@ Returns the GSEPD object post-processed, for use in further plotting functions. 
                 sampleMeta=IlluminaBodymapMeta,
                 COLORS=c("green","black","red"))
   G <- GSEPD_ChangeConditions( G, c("A","B")) #set testing groups first!   
- # G <- GSEPD_Process( G ) #would run DESeq2 and GOSeq and GSEPD comparing conditions A and B
+  #G <- GSEPD_Process( G ) #would run DESeq2 and GOSeq and GSEPD comparing conditions A and B
  
 }
 

@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.11.5
+--------------------------
+BUG FIXES
+    o updating dependencies caused a crash. Investigating.
+      GO.db seems to no longer support double-brackets accessor.
+      Refactored for GO.db 3.6.0's requirement of select()
+
 CHANGES IN VERSION 1.11.2
 --------------------------
 BUG FIXES

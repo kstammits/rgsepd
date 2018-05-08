@@ -53,8 +53,9 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
     else
       AS <-  myPoints[,Group2Set]#take the mean
     
-    VectorBetween <- AA - AS
+    VectorBetween <- (AA - AS)
     uVectorBetween <- VectorBetween/ sqrt(sum(VectorBetween^2)) #unit
+    uVectorBetween = as.vector(uVectorBetween)
     #what is the scalar value of each archetype?
     AA.s <- AA %*% uVectorBetween
     AS.s <- AS %*% uVectorBetween 
@@ -114,6 +115,7 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
       CF=GSEPD$COLORFUNCTION(100)
       for(i in 1:ncol(myPoints)){ #across people
           scalarProjection <- (myPoints[,i]-AA) %*% (uVectorBetween)
+          scalarProjection <- as.vector(scalarProjection)
           projected <- scalarProjection * uVectorBetween + AA; 
           lty=ifelse(zD[i] < GSEPD$VECTOR_DISTANCE_ZTHRESH_Moderate, 1 , 
                      ifelse(zD[i] < GSEPD$VECTOR_DISTANCE_ZTHRESH_Severe, 2 , 3))

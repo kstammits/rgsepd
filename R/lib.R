@@ -307,19 +307,11 @@ AnnotateTable.GO <- function(G){
       GOR$over_represented_pvalue , GOR$under_represented_pvalue),
                       1,min)
     GOR <- subset(GOR,GOR$minp <= PLIM | GOR$category %in% igo)
-    GOR$Term = rep("NA",length(GOR$category))
-    GOR$Ontology = rep("NA",length(GOR$category))
-    GOR$Definition = rep("NA",length(GOR$category))
-    if(nrow(GOR)>0) {
-      for(i in 1:length(GOR$category)){
-        got=GOTERM[[GOR$category[i]]] #fetch object slowly
-        GOR$Term[i] = got@Term;
-        GOR$Ontology[i] = got@Ontology; #reorganize to a matrix
-        GOR$Definition[i] = got@Definition;
-      }
-    }
-
-    GOR
+    gots = select(GO.db,keys=as.character(GOR$category),
+                  columns=c("GOID","TERM","ONTOLOGY","DEFINITION"),
+                  keytype="GOID")
+    colnames(gots) <- c("GOID","Term","Ontology","Definition")
+    merge(GOR, gots, by.x="category",by.y="GOID", all.x=TRUE)
   }
   GO.wall    <- FilterGOSEQ(GO.wall   , PLIM=G$LIMIT$GO_PVAL*1.5)
   GO.wall.Up <- FilterGOSEQ(GO.wall.Up, PLIM=G$LIMIT$GO_PVAL*1.5)
