@@ -1,3 +1,13 @@
+CHANGES IN VERSION 1.15.#
+--------------------------
+Planning to add some features. Unstable.
+ - new legends in plots.
+ - custom point colors in plots
+ - custom genes in plots.
+ - annotate p-value on gene names in plots.
+ - Add lcfThreshold to the DESeq routines, so the p-values are adjusted correctly.
+ ( not done yet, users should go back to version 1.14)
+
 CHANGES IN VERSION 1.11.5
 --------------------------
 BUG FIXES
