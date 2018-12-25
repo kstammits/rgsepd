@@ -91,7 +91,9 @@ MergeResultsTables <- function(G){
 
 ProcessDESEQ <- function(G){
   dds <- DESeq(GSEPD_Export_DESeq(G))
-  res <- results(dds, contrast=c("Condition",G$Conditions[1],G$Conditions[2]))
+  res <- results(dds,
+                 contrast=c("Condition",G$Conditions[1],G$Conditions[2]),
+                 lfcThreshold = as.numeric(G$LIMIT$LFC)[1])
 
 #  message("trying to drop genes with zero baseMean");
 #  res = subset(res,res$baseMean > 0.01)

@@ -14,14 +14,14 @@ See the Vignette for usage examples, and minimal examples within each function's
 \tabular{ll}{
 Package: \tab rgsepd\cr
 Type: \tab Package\cr
-Version: \tab 1.7.1\cr
-Date: \tab 2017-03-26\cr
+Version: \tab 1.15.1\cr
+Date: \tab 2018-12-24\cr
 License: \tab GPL-3\cr
 }
 
 }
 \author{
-Karl D. Stamm <karl.stamm@gmail.com>
+Karl D. Stamm PhD <karl.stamm@gmail.com>
 }
 \references{
 Initially a wrapper for DESeq2 and GOSeq, late-stage processing continues with a unique geneset based sample clustering. }

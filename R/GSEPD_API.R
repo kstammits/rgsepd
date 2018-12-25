@@ -1,11 +1,12 @@
-
+# setup the two test conditions, 'the contrast' we're going to test.
 GSEPD_ChangeConditions <- function(GSEPD, newConditions){
+  newConditions = as.character(newConditions[1:2]) # cleanup
   if(length(newConditions)==2){
     samples_conds <-  as.character(GSEPD$sampleMeta$Condition[GSEPD$sampleMeta$Condition %in% newConditions])
     tconds=table(samples_conds)
     if(any(tconds)<1){#check that we're not missing any
       missingno <- names(tconds[tconds<1])[1]
-      om <- sprintf("cannot set the comparison conditions to %s vs %s because sampleMeta$Condition has no one of type %s",
+      om <- sprintf("cannot set the comparison conditions to '%s' vs '%s' because sampleMeta$Condition has no samples of type '%s'",
                     newConditions[1],newConditions[2],missingno)
       stop(om)
     }

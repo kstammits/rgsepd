@@ -1,6 +1,7 @@
 
-GSEPD_PCA_Plot <- function(GSEPD){
-
+GSEPD_PCA_Plot <- function(GSEPD, customColors=FALSE ){
+  # customColors is a flag to use the sampleMeta$CustomColor rather than the Condition.
+  
   sampleMeta<- GSEPD$sampleMeta
   Condition<- GSEPD$Conditions
   if(is.null(Condition)) 
@@ -9,7 +10,7 @@ GSEPD_PCA_Plot <- function(GSEPD){
   
   COLORS=GSEPD$COLORS
   if(!(all(Condition %in% sampleMeta$Condition))) 
-    stop("specified conditions not found in sample metadata table")
+    stop("specified conditions to test not found in sample metadata table")
   
   GSEPD<-GSEPD_CheckCounts(GSEPD) #ensure #normCounts exists....
   fc <- GSEPD$normCounts
@@ -25,10 +26,25 @@ GSEPD_PCA_Plot <- function(GSEPD){
     return();
   }
   
-  sms=colnames(sfc)
+  
   cols=rep(1,ncol(sfc))
-  cols[as.character(sampleMeta$Condition)==Condition[1]]=COLORS[1]
-  cols[as.character(sampleMeta$Condition)==Condition[2]]=COLORS[3]
+  
+  if(customColors){
+    if("CustomColor" %in% colnames(sampleMeta)){
+      cols=sampleMeta$CustomColor
+    }else{
+      # user asked for CustomColors to be used, but I don't have any available.
+      message("User asked for customColors, but didn't specify the sampleMeta$CustomColor column. Using defaults instead.")
+    }
+  }
+  
+  if(all(cols==1)){# default behavior is to color dots like the Conditions
+    cols[as.character(sampleMeta$Condition)==Condition[1]]=COLORS[1]
+    cols[as.character(sampleMeta$Condition)==Condition[2]]=COLORS[3]
+  }
+  
+  sms=colnames(sfc)
+
   pchs=rep(3,ncol(sfc));
   pchs[as.character(sampleMeta$Condition)==Condition[1]]=1
   pchs[as.character(sampleMeta$Condition)==Condition[2]]=2
@@ -54,7 +70,13 @@ GSEPD_PCA_Plot <- function(GSEPD){
                      decreasing=TRUE )[1:ANNOTE_GENES])
     gns=DisplayName(PC2);
     mtext(side=2,text=gns,at=seq(min(y),max(y),length.out=ANNOTE_GENES),line=3) 
-    legend(GSEPD$PCA_LEGEND,legend=c(Condition,"Other"), pch=c(1,2,3), col=c(COLORS[c(1,3)],1))
+    if(customColors){
+      # have to generate a smarter legend
+      # but we have no idea what sort of symbols the user may supply.
+      # no legend for now.
+      }else{# default legend:
+        legend(GSEPD$PCA_LEGEND,legend=c(Condition,"Other"), pch=c(1,2,3), col=c(COLORS[c(1,3)],1))   
+    }
     title(main=paste("PCA over",nrow(sfc),"transcripts"))
   dev.off();
   
@@ -106,7 +128,13 @@ GSEPD_PCA_Plot <- function(GSEPD){
                        decreasing=TRUE )[1:ANNOTE_GENES])
       gns=DisplayName(PC2)
       mtext(side=2,text=gns,at=seq(min(y),max(y),length.out=ANNOTE_GENES),line=3) 
-      legend(GSEPD$PCA_LEGEND,legend=c(Condition,"Other"), pch=c(1,2,3), col=c(COLORS[c(1,3)],1))    
+      if(customColors){
+        # have to generate a smarter legend
+        # but we have no idea what sort of symbols the user may supply.
+        # no legend for now.
+      }else{# default legend:
+        legend(GSEPD$PCA_LEGEND,legend=c(Condition,"Other"), pch=c(1,2,3), col=c(COLORS[c(1,3)],1))   
+      }
       title(main=paste("PCA over",nrow(sfc),"transcripts"))
     dev.off();
   }
@@ -114,7 +142,7 @@ GSEPD_PCA_Plot <- function(GSEPD){
 
 
 
-GSEPD_PCA_Spec <- function(GSEPD, GOT, MDATA=NULL){
+GSEPD_PCA_Spec <- function(GSEPD, GOT, MDATA=NULL, customColors=FALSE){
   
   sampleMeta<- GSEPD$sampleMeta
   Condition<- GSEPD$Conditions
@@ -142,9 +170,21 @@ GSEPD_PCA_Spec <- function(GSEPD, GOT, MDATA=NULL){
   NS=ncol(GSEPD$normCounts)
   NG=length(GOI)
   
+  
   cols=rep(1,NS)
-  cols[as.character(sampleMeta$Condition)==Condition[1]]=COLORS[1]
-  cols[as.character(sampleMeta$Condition)==Condition[2]]=COLORS[3]
+  if(customColors){
+    if("CustomColor" %in% colnames(sampleMeta)){
+      cols=sampleMeta$CustomColor
+    }else{
+      # user asked for CustomColors to be used, but I don't have any available.
+      message("User asked for customColors, but didn't specify the sampleMeta$CustomColor column. Using defaults instead.")
+    }
+  }
+  if(all(cols==1)){# default behavior is to color dots like the Conditions
+    cols[as.character(sampleMeta$Condition)==Condition[1]]=COLORS[1]
+    cols[as.character(sampleMeta$Condition)==Condition[2]]=COLORS[3]
+  }
+  
   pchs=rep(3,NS);
   pchs[as.character(sampleMeta$Condition)==Condition[1]]=1
   pchs[as.character(sampleMeta$Condition)==Condition[2]]=2
@@ -185,5 +225,12 @@ GSEPD_PCA_Spec <- function(GSEPD, GOT, MDATA=NULL){
     gns=hash::values(HGNC[PC2])
     mtext(side=2,text=gns,at=seq(min(y),max(y),length.out=ANNOTE_GENES),line=3) 
   }
-  legend(GSEPD$PCA_LEGEND,legend=c(Condition,"Other"), pch=c(1,2,3), col=c(COLORS[c(1,3)],1))
+  if(customColors){
+    # have to generate a smarter legend
+    # but we have no idea what sort of symbols the user may supply.
+    # no legend for now.
+  }else{# default legend:
+    legend(GSEPD$PCA_LEGEND,legend=c(Condition,"Other"), pch=c(1,2,3), col=c(COLORS[c(1,3)],1))   
+  }
+  
 }

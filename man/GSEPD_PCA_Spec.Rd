@@ -4,7 +4,7 @@
 \title{Specialized PCA Plot}
 \description{After processing the pipeline, users may want to have further PCA figures generated. This function takes a completed GSEPD object and generates informative figures. This function includes parameters to specify a particular GO-Term of interest.}
 \usage{
-GSEPD_PCA_Spec(GSEPD, GOT, MDATA = NULL)
+GSEPD_PCA_Spec(GSEPD, GOT, MDATA = NULL, customColors=FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -13,7 +13,9 @@ The master GSEPD object, post-processed.}
   \item{GOT}{
 The GO-Term you'd like to specifically analyse. It should be found in the .MERGE file.}
   \item{MDATA}{
-Optionally, pass in the .MERGE dataset, if missing, we'll try to read the already-processed file from the output directory. This option exists because reading that file repeatedly is quite slow, so you're recommended to read it in once in advance if you intend on making more than one GO-Term specific plot.}
+Optionally, pass in the .MERGE dataset, if missing, we'll try to read the already-processed file from the output directory. This option exists because reading that file repeatedly is quite slow, so you're recommended to read it in once in advance if you intend on making more than a couple GO-Term specific plots.}
+  \item{customColors}{
+a boolean value, when FALSE, default behavior is to color points to match the test conditions. When TRUE, use sampleMeta$CustomColor column for a sample-by-sample user specification. This behavior disables the built-in legend. }
 }
 \value{ No return value. Generates files.}
 \note{
