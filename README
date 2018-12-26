@@ -1,0 +1,9 @@
+README
+
+R/GSEPD or rgsepd is an R package, of Bioconductor style and an abbreviation which expands to Geneset enrichment and Projection Displays. It's a software tool for bioinformatics practicioners and biologists with transcriptome datasets they need help analyzing. 
+
+Automation scripts herein facilitate case/control or two-group comparisons within human RNA-Seq datasets to perform differential expression, geneset overrepresentation, and a novel set/subspace analysis which shows the user how their samples behave relative to each other in a gene-set n-dimensional sense.  See the bioconductor webpage for more information.
+
+https://www.bioconductor.org/packages/release/bioc/html/rgsepd.html
+
+Copywrite 2014-2019 Karl Stamm and Marquette University, but released open source for free scientific usage as GPL3 via Bioconductor.org.  
