@@ -16,5 +16,5 @@ Imports: gplots, biomaRt, org.Hs.eg.db, GO.db, SummarizedExperiment, hash,
         AnnotationDbi
 Suggests: boot, tools, BiocGenerics, knitr, xtable
 License: GPL-3
-biocViews: Software, DifferentialExpression, GeneSetEnrichment, RNASeq
+biocViews: ImmunoOncology, Software, DifferentialExpression, GeneSetEnrichment, RNASeq
 VignetteBuilder: knitr
