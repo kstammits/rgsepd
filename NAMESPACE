@@ -31,6 +31,7 @@ importFrom("graphics", "hist", "legend", "lines", "mtext", "pairs",
              "plot", "points", "text", "title")
 importFrom("stats", "kmeans", "median", "prcomp", "relevel", "runif",
              "sd", "var")
+importFrom("stats", "p.adjust")
 importFrom("utils", "packageDescription", "read.csv", "write.csv",
              "write.table")
 
