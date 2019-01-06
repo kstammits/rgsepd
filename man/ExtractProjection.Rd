@@ -14,7 +14,7 @@ ExtractProjection(GSEPD, txids, DRAWING=FALSE, GN=c(1,2), PRINTING=FALSE, plotTi
   \item{GSEPD}{The GSEPD parameter object. Must be post-Process.}
   \item{txids}{The transcript IDs, generally REFSEQ identifiers corresponding to rows of the counts table for this a projection is desired. In normal usage these are based on a GO Term. }
   \item{DRAWING}{ Boolean flag to draw a plot of the projection.  }
-  \item{GN}{ The gene numbers: which items of the 'txids' list are to be drawn. Only the first two are used. }
+  \item{GN}{ The gene numbers: which items of the 'txids' list are to be drawn. Only the first two are used. If Drawing=FALSE, this parameter is irrelevant.}
   \item{PRINTING}{ Boolean flag to print some debug information. }
   \item{plotTitle}{ A name for this set of genes, serves as the plot's main title. }
   

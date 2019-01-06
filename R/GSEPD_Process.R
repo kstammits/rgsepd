@@ -94,7 +94,10 @@ ProcessDESEQ <- function(G){
   res <- results(dds,
                  contrast=c("Condition",G$Conditions[1],G$Conditions[2]),
                  lfcThreshold = as.numeric(G$LIMIT$LFC)[1])
-
+  res <- lfcShrink(dds,
+                 contrast=c("Condition",G$Conditions[1],G$Conditions[2]),
+                 res = res)
+  
 #  message("trying to drop genes with zero baseMean");
 #  res = subset(res,res$baseMean > 0.01)
 #  message(paste("Filtered entries remaining: ",length(res$id)));

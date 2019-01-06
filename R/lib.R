@@ -73,16 +73,16 @@ FileMerge<-function(GSEPD){
   if(!GSEPD$QUIET)Message_Generate(GSEPD_MFile(GSEPD))
   
   data.GO <- read.csv(GSEPD_GOFile(GSEPD),as.is=TRUE,header=TRUE)
-  sGO1<-subset(data.GO[,c("category","over_represented_pvalue","Term")] , 
-                   data.GO$over_represented_pvalue < (GSEPD$LIMIT$GO_PVAL * 1.25));
+  sGO1<-subset(data.GO[,c("category","over_represented_padj","Term")] , 
+                   data.GO$over_represented_padj < (GSEPD$LIMIT$GO_PVAL * 1.25));
   sGO1$GOSEQ_DEG_Type <- rep("Mix", nrow(sGO1)) ; rm(data.GO)
   data.GO <- read.csv(GSEPD_GOUpFile(GSEPD),as.is=TRUE,header=TRUE)
-  sGO2<-subset(data.GO[,c("category","over_represented_pvalue","Term")] , 
-               data.GO$over_represented_pvalue < (GSEPD$LIMIT$GO_PVAL * 1.25));
+  sGO2<-subset(data.GO[,c("category","over_represented_padj","Term")] , 
+               data.GO$over_represented_padj < (GSEPD$LIMIT$GO_PVAL * 1.25));
   sGO2$GOSEQ_DEG_Type <- rep("Up", nrow(sGO2)) ; rm(data.GO)
   data.GO <- read.csv(GSEPD_GODownFile(GSEPD),as.is=TRUE,header=TRUE)
-  sGO3<-subset(data.GO[,c("category","over_represented_pvalue","Term")] , 
-               data.GO$over_represented_pvalue < (GSEPD$LIMIT$GO_PVAL * 1.25));
+  sGO3<-subset(data.GO[,c("category","over_represented_padj","Term")] , 
+               data.GO$over_represented_padj < (GSEPD$LIMIT$GO_PVAL * 1.25));
   sGO3$GOSEQ_DEG_Type <- rep("Down", nrow(sGO3)) ; rm(data.GO)
   
   sdata.GO <- rbind(sGO3,sGO2,sGO1) ; rm(sGO1,sGO2,sGO3)
@@ -97,7 +97,7 @@ FileMerge<-function(GSEPD){
 
   mdata<-merge(sdata.GO, data.GO2, by.x="category",by.y="category")
   mdata<-subset(mdata, mdata$category %in% cats,
-                select=c("category", "over_represented_pvalue.x","Term.x","GOSEQ_DEG_Type","HGNC", "LOG2.X.Y.","REFSEQ",
+                select=c("category", "over_represented_padj.x","Term.x","GOSEQ_DEG_Type","HGNC", "LOG2.X.Y.","REFSEQ",
                          GSEPD$C2T[1],GSEPD$C2T[2], "PVAL","PADJ") )
   write.csv(mdata,GSEPD_MFile(GSEPD))
 }
@@ -302,9 +302,12 @@ AnnotateTable.GO <- function(G){
      paste(Missing_GO_terms, collapse=" ")))
   
   FilterGOSEQ <- function(GOR, PLIM) {
+    # do a Benjamini-Hochberg correction of p-values.
+    GOR$over_represented_padj = p.adjust(GOR$over_represented_pvalue, method="BH")
+    GOR$under_represented_padj = p.adjust(GOR$under_represented_pvalue, method="BH")
     #filter reported set to something with a pvalue:
     GOR$minp <- apply(cbind( 
-      GOR$over_represented_pvalue , GOR$under_represented_pvalue),
+      GOR$over_represented_padj , GOR$under_represented_padj),
                       1,min)
     GOR <- subset(GOR,GOR$minp <= PLIM | GOR$category %in% igo)
     gots = select(GO.db,keys=as.character(GOR$category),
@@ -344,7 +347,6 @@ AnnotateTable.GO <- function(G){
     if(length(GID)>0)
       OM=rbind(OM, cbind(rep(gocat,length(GID)), GID))
   }
-  head(OM)
   
   merged=merge(OM,sdata,by="ENTREZ")
   #now making the GO2 file out of just the single GOseq. 
@@ -355,6 +357,7 @@ AnnotateTable.GO <- function(G){
   if(!G$QUIET)Message_Generate(outfile2)
   keepCol=c("REFSEQ","HGNC",G$C2T[1],G$C2T[2], "LOG2.X.Y.",  "PVAL",
             "PADJ",	"category",	"over_represented_pvalue",	"under_represented_pvalue",
+            "over_represented_padj",	"under_represented_padj",
             "numDEInCat",	"numInCat",	"Term",	"Ontology")
  #keepCol[ !(keepCol %in% colnames(merged))]
   merged=subset(merged,merged$numInCat<800 |  merged$category %in% igo, select=keepCol)

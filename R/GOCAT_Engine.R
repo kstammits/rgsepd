@@ -44,7 +44,7 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
   }
   
   tcats <- table(M.data$category)
-  cats <- unique( subset( M.data, M.data$over_represented_pvalue.x < GSEPD$LIMIT$GO_PVAL)$category)
+  cats <- unique( subset( M.data, M.data$over_represented_padj.x < GSEPD$LIMIT$GO_PVAL)$category)
   #omit those with too few or too many
   cats = setdiff(cats, names(tcats)[tcats<GSEPD$MinGenesInSet | tcats>GSEPD$MaxGenesInSet]  ) 
 
@@ -112,7 +112,7 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
     for(i in 1:length(cats)) { 
       roi <- (M.data$category == cats[i]) #find the entry in Mdata
       GONames[i] <- sprintf("%s %s",M.data$Term.x[roi][1], M.data$category[roi][1]); 
-      GOPs[i] <- M.data$over_represented_pvalue.x[roi][1];
+      GOPs[i] <- M.data$over_represented_padj.x[roi][1];
       #if this GOSet fails to separate the classes, we can drop it from further processing
       if( Segregation_PV[i] < GSEPD$LIMIT$Seg_P){
         #if it segregates let's make a pairs plot to go with

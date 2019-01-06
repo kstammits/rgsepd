@@ -56,7 +56,7 @@ GSEPD_INIT <- function( Output_Folder="OUT" ,finalCounts=NULL, sampleMeta=NULL,
                       baseMean=20,  # defines which genes are expressed
                       LFC=1, # defines which genes are differentially expressed for the purposes of gene set enrichment
                       PADJ=0.050,  # defines which genes are differentially expressed for the purposes of gene set enrichment
-                      GO_PVAL=0.050, # defines which pathways are to be included in the heatmap figure (MERGE.over_represented_pvalue < x)                      
+                      GO_PVAL=0.050, # defines which pathways are to be included in the heatmap figure (MERGE.over_represented_padj < x), using GOSeq's p value after p.adjust(BH)                  
                       Seg_P=0.050 ) #only PCA/Scatter plot those GOSets with segregating ability.
   
   GSEPD$Segregation_Precision <- 0.01 #about how certain do we have to be in the permuted kmeans. We'll empirically calculate between 1 and 4 times the reciprocal of this number. See GroupSignificance.R for permutation loops.
