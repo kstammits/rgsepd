@@ -28,7 +28,7 @@ DESeq2 }
   isoform_ids <- Name_to_RefSeq(c("HIF1A","EGFR","MYH7","CD33","BRCA2"))
   rows_of_interest <- unique( c( isoform_ids ,
                                  sample(rownames(IlluminaBodymap),
-                                        size=500,replace=FALSE)))
+                                        size=2000,replace=FALSE)))
   G <- GSEPD_INIT(Output_Folder="OUT",
                 finalCounts=round(IlluminaBodymap[rows_of_interest , ]),
                 sampleMeta=IlluminaBodymapMeta,

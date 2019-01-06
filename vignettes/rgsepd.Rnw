@@ -67,7 +67,7 @@ library(xtable)
 After gene sets are detected from a differential expression analysis, the results are merged into a novel `projection display' wherein each sample is scored according to each condition's multidimensional average expression. When the treatment samples are found to have a perturbed expression profile for a particular GO Term (geneset), all samples are scored on an axis ranging from control to treatment condition, and outliers or anomalous samples are readily apparent. Clustering quality of samples in a given geneset-space is quantified by the cluster's ``Validity score'' \cite{Validity} and an empirical permutation derived p-value. GO Terms with more genes than samples in your comparison will randomly appear enriched, so the Segregation P-value is used to determine if a GO Term is significantly segregating your samples. 
 
 \section{Usage}
-You'll need a prepared matrix of read-counts per transcript (Table \ref{MyT1}.) You can use HTSeq or RSEM or coverageBed, or any other generation method, so long as it ends with a table of counts by transcript ID. This software comes pre-packaged with a dataset based on the IlluminaBodyMap project, counted with coverageBed. The second prerequisite is a metadata table associating sample identifiers with their test-condition and a nickname to annotate figures with (see Table \ref{MyT2} for the included sample). Alternatively, the manual/Vignette for DESeq2 describes how to generate a dataset object from HTSeq read counts, you can also initialize GSEPD with the DESeqDataSet object instead of the counts matrix.
+You'll need a prepared matrix of read-counts per transcript (Table \ref{MyT1}.) You can use HTSeq or RSEM or coverageBed, or any other generation method, so long as it ends with a table of counts by transcript ID. This software comes pre-packaged with a dataset based on the IlluminaBodyMap project, counted with coverageBed. The second prerequisite is a metadata table associating sample identifiers with their test-condition and a nickname to annotate figures with (see Table \ref{MyT2} for the included sample). Alternatively, the manual/Vignette for DESeq2 describes how to generate a dataset object from HTSeq read counts, you can also initialize GSEPD with the DESeqDataSet object instead of the counts matrix. By default this table will be normalized by DESeq during processing, but if you have a pre-normalized table, you can prevent the double normalization by setting renormalize=FALSE in the INIT() routine. 
 
 \subsection{Naming Conventions}
 In \verb,R,, column names are not allowed to have spaces or certain special characters like $+$ or \/. As your sample names are the columns of the count table, this implies your sample names may not have special characters or spaces. When you load a table with invalid column headers, \verb,R, may silently convert invalid characters into periods, thus ``Sample 1'' becomes ``Sample.1''. If your metadata table (where samples must be annotated) matches the original count table, it won't match this converted name, and you'll either get an error about samples not being found, or worse, an apparently successful run with invalid data. In later stages of the \verb,GSEPD, process your test conditions also become column headers, and spaces will cause an error before completion. It's better to compare groups \verb,`test', vs \verb,`control', than \verb,`lung tissue', vs \verb,`healthy(-ish) person',.
@@ -90,14 +90,14 @@ print.xtable(xT, scalebox=0.60)
 xtable(T2, caption ="First few rows of the included IlluminaBodymapMeta dataset. See \\texttt{?IlluminaBodymapMeta} for more details. These are easy to build with a spreadsheet, saved to csv and R's builtin \\texttt{?read.csv}", label = 'MyT2')
 @
 
-Next we'll sub-select $1,000$ genes from this set for speed.  Initialize the GSEPD object with the \tt GSEPD\_INIT \rm function. Finally, to indicate which conditions will be tested as this dataset includes samples from `condition' A, B, and C, we use \tt GSEPD\_ChangeConditions\rm.
+Next we'll sub-select $2,000$ genes from this set for speed.  Initialize the GSEPD object with the \tt GSEPD\_INIT \rm function. Finally, to indicate which conditions will be tested as this dataset includes samples from `condition' A, B, and C, we use \tt GSEPD\_ChangeConditions\rm.
 
 
 <<setup>>=
 isoform_ids <- Name_to_RefSeq(c("GAPDH","HIF1A","EGFR","MYH7","CD33","BRCA2"))
 rows_of_interest <- unique( c( isoform_ids ,
                     sample(rownames(IlluminaBodymap),
-                    size=1500,replace=FALSE)))
+                    size=2000,replace=FALSE)))
 G <- GSEPD_INIT(Output_Folder="OUT",
           finalCounts=round(IlluminaBodymap[rows_of_interest , ]),
           sampleMeta=IlluminaBodymapMeta,
