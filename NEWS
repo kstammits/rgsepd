@@ -2,10 +2,10 @@ CHANGES IN VERSION 1.15.#
 --------------------------
 Planning to add some features. Unstable.
  - new legends in plots.
- - custom point colors in PCA plot function. uses sampleMeta$CustomColor and disables the built in legend. 
- - custom genes in plots.
- - annotate p-value on gene names in plots.
- - Add lfcThreshold to the DESeq routines, so the p-values are adjusted correctly. ( implemented 1.15.1 ) This changes the behavior of most of the system. Expect a different gene set. 
+ - custom point colors in PCA plot function. uses sampleMeta$CustomColor and disables the built in legend.
+ - custom genes in plots. -- um what
+ - Add lfcThreshold to the DESeq routines, so the p-values are adjusted correctly. ( implemented 1.15.1 ) This changes the behavior of most of the system. Expect a different gene set.
+ - New option to INIT() called renormalize, allowing user to specify preferred matrix normalization schema rather than the default DESeq2::varianceStabilizingTransform (when renormalize=FALSE). 
  ( not done yet, users should go back to version 1.14)
 
 CHANGES IN VERSION 1.11.5

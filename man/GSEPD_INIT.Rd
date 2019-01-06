@@ -6,7 +6,7 @@ Initialization}
 \description{Initializes the system, here you will pass in the count dataset and the sample metadata, before any GSEPD processing. Return value is a named list holding configurable parameters. }
 \usage{
 GSEPD_INIT(Output_Folder = "OUT", finalCounts = NULL, sampleMeta = NULL,
-DESeqDataSet = NULL,
+DESeqDataSet = NULL, renormalize = TRUE,
   COLORS = c("green", "gray", "red"),
   C2T = "x" )
 }
@@ -16,6 +16,7 @@ DESeqDataSet = NULL,
   \item{finalCounts}{This must be a matrix of count data, rows are transcript IDs and columns are samples.}
   \item{sampleMeta}{The sampleMeta matrix must be passed here. It is a data frame with a row for each sample in the finalCounts matrix. Some required columns are SHORTNAME= sample nicknames; Condition= treatment group for differential expression; and Sample are the column names of finalCounts. Other columns are permitted to facilitate subsetting (not automatically supported).}
   \item{DESeqDataSet}{Data may also be included in the format of a DESeqDataSet object, this is mutually exclusive of the finalCounts/sampleMeta scheme.}
+  \item{renormalize}{Boolean performance flag. Default is TRUE, which causes a normalized counts table to be computed from your given raw reads 'finalCounts'. If you set this to FALSE, then the normCounts table is preloaded with the given finalCounts input matrix, short circuiting the built-in DESeq VST, and allowing the user to specify some sort of pre-normalized dataset.}
   \item{COLORS}{A three element vector of colors to make the heatmaps, the first element is the under-expressed genes, and the third element is the over-expressed genes. Defaults to green-red through gray.}
   \item{C2T}{This symbol is used in the filenames to delimit sample groups.}
   

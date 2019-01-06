@@ -1,6 +1,6 @@
 
 GSEPD_INIT <- function( Output_Folder="OUT" ,finalCounts=NULL, sampleMeta=NULL,
-                        DESeqDataSet = NULL,
+                        DESeqDataSet = NULL, renormalize=TRUE,
                         COLORS = c("green", "gray", "red"),
                         C2T = "x" ){
   
@@ -31,6 +31,14 @@ GSEPD_INIT <- function( Output_Folder="OUT" ,finalCounts=NULL, sampleMeta=NULL,
      message(sprintf("Keeping rows with counts (%d of %d)",sum(KeepRows),length(KeepRows))) 
   GSEPD$finalCounts <- GSEPD$finalCounts[KeepRows,] ;rm(KeepRows)
      
+  
+  # if we do not pre-load G$normCounts, then GSEPD_CheckCounts() will run DESEQ's VST
+  # but the user could ask to keep the input as given directly
+  if(!renormalize){
+   GSEPD$normCounts = GSEPD$finalCounts
+  }
+  
+  
   GSEPD$Output_Folder = Output_Folder #new files are generated into this sub-folder
   
   if(!(file.exists(GSEPD$Output_Folder)))

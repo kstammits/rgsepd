@@ -33,113 +33,13 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
   #pull up the merged doc and grab the minor GO term
   M.data <- read.csv(GSEPD_MFile(GSEPD), as.is=TRUE, header=TRUE,row.names=1) 
 
-  ExtractProjection <- function(DEG, Group1Set=c(1,2,3), Group2Set=c(4,5,6), DRAWING=FALSE, GN=c(1,2), PRINTING=FALSE,pchs=3,cols="black") {
-    
-    #z-score normalization by gene of the samples' normalized counts:
-    myPoints <- t(scale( t( finalCounts[DEG$REFSEQ,])))
-    
-    if(PRINTING) {
-      print(myPoints)
-      print(DEG)
-      print(GN)
-      print(Group1Set)
-    }
-    if(length(Group1Set) > 1)
-      AA <- apply(myPoints[,Group1Set],1,mean)#take the mean
-    else
-      AA <- myPoints[,Group1Set]#take the mean
-    if(length(Group2Set)>1)
-      AS <- apply(myPoints[,Group2Set],1,mean)
-    else
-      AS <-  myPoints[,Group2Set]#take the mean
-    
-    VectorBetween <- (AA - AS)
-    uVectorBetween <- VectorBetween/ sqrt(sum(VectorBetween^2)) #unit
-    uVectorBetween = as.vector(uVectorBetween)
-    #what is the scalar value of each archetype?
-    AA.s <- AA %*% uVectorBetween
-    AS.s <- AS %*% uVectorBetween 
-
-    #then we can easily get the distance to each centroid
-    #AA is mean of gene expressions. genes are on the row of myPoints
-    Gamma1 <- apply(myPoints , 2, function(x) sqrt(sum(  (x-AA)^2  )))
-    Gamma2 <- apply(myPoints , 2, function(x) sqrt(sum(  (x-AS)^2  )))
-    #theyre NOT zero-one yet.
-    #scale by the distance between them 
-    #so it's in units of (AA to AS)
-    Gamma1 <- Gamma1 / (sqrt(sum(VectorBetween^2))) ; 
-    Gamma2 <- Gamma2 / (sqrt(sum(VectorBetween^2))) ; 
-    
-    xlim=c(min(AA[GN[1]],min(myPoints[GN[1],]),AS[GN[1]]),
-           max(AA[GN[1]],max(myPoints[GN[1],]),AS[GN[1]]))+c(-0.5,0.5)
-    ylim=c(min(AA[GN[2]],min(myPoints[GN[2],]),AS[GN[2]]),
-           max(AA[GN[2]],max(myPoints[GN[2],]),AS[GN[2]]))+c(-0.5,0.5)
-    #each one needs to get projected onto VectorBetween
-    alpha=rep(NA,ncol(myPoints)) # a 0-100% scale along the line
-    distance_to_line=rep(NA,ncol(myPoints)) #a sample's divergence from the mean/mean line
-    
-    if(DRAWING==TRUE){
-      plot(cbind(AA, AS)[GN[1],] , cbind(AA, AS)[GN[2],] , type="l", lwd=2,
-           xlab=paste(DEG$HGNC[GN[1]],"Z-Score Norm Counts"),
-           ylab=paste(DEG$HGNC[GN[2]],"Z-Score Norm Counts"), 
-           xlim=xlim, ylim=ylim, main=DEG$Term.x[1] ) 
-      text( x=cbind(AA, AS)[GN[1],] , y=cbind(AA, AS)[GN[2],], pos=1, labels=GSEPD$C2T)
-    }
-    for(i in 1:ncol(myPoints)){ #across people
-      scalarProjection <- c((myPoints[,i]-AA) %*% (uVectorBetween))
-      scalarProjection <- as.vector(scalarProjection)# new in R 3.5.0
-      projected <- scalarProjection * uVectorBetween +AA; 
-      distance_to_line[i] <- sqrt(sum( (myPoints[,i] - projected)^2))
-      if(DRAWING==TRUE){
-        #dots along the line are pch=16
-        points(projected[GN[1]],projected[GN[2]], col="black", pch=16);
-        points(myPoints[GN[1],i],myPoints[GN[2],i],col=cols[i], pch=pchs[i],cex=2)
-        thisGuy <- GSEPD$sampleMeta$SHORTNAME[GSEPD$sampleMeta$Sample==colnames(myPoints)[i]]
-        text( x=myPoints[GN[1],i] , y=myPoints[GN[2],i], pos=1, labels=thisGuy,cex=0.5)
-      }
-      #alpha is the scalar value..
-      #now with all these scalars
-      #shift their space down by tail and divide out the distance for a 0-100% scale along the line
-      alpha[i] <- (scalarProjection - AA.s) / (AS.s-AA.s)
-      #theoretically that vector is all zero,zero,zero, one,one,one
-    }
-    
-    #unknown bug has alpha not scaled 0-1. let's do it again.
-    alpha_G1 <- mean(alpha[which(colnames(myPoints) %in% Group1Set)]) ;
-    alpha=alpha-alpha_G1
-    alpha_G2 <- mean(alpha[which(colnames(myPoints) %in% Group2Set)]) ;
-    alpha=alpha/alpha_G2
-    
-    if(DRAWING==TRUE){
-      zD <- scale( distance_to_line ) #calculate line styles the same as the white dots on the heatmap
-      CF=GSEPD$COLORFUNCTION(100)
-      for(i in 1:ncol(myPoints)){ #across people
-          scalarProjection <- (myPoints[,i]-AA) %*% (uVectorBetween)
-          scalarProjection <- as.vector(scalarProjection)
-          projected <- scalarProjection * uVectorBetween + AA; 
-          lty=ifelse(zD[i] < GSEPD$VECTOR_DISTANCE_ZTHRESH_Moderate, 1 , 
-                     ifelse(zD[i] < GSEPD$VECTOR_DISTANCE_ZTHRESH_Severe, 2 , 3))
-          col=CF[cap(round( alpha[i]*100), 1,100 )]
-          lines(x=c(projected[GN[1]],myPoints[GN[1],i]), y=c(projected[GN[2]],myPoints[GN[2],i]),lty=lty, col=col)
-      }
-    }
-    
-    x=list();
-    x$alpha=alpha
-    x$beta=distance_to_line / nrow(myPoints)
-    #adding a "gamma" so we can measure the distance to each centroid
-    x$gamma1=Gamma1
-    x$gamma2=Gamma2
-    x
-  }
- 
   AssembleGOSTAT <- function(GOTERM){
     x=list();
     x$Term=GOTERM;
     DEG=subset(M.data,M.data$category==GOTERM)
     x$Name=DEG$Term.x[1]
-    x$DataProjection <- ExtractProjection( DEG , Group1Set=G1, Group2Set=G2,
-                                           PRINTING=FALSE)
+    x$DataProjection <- ExtractProjection(GSEPD, DEG$REFSEQ ,
+                                          PRINTING = FALSE, DRAWING = FALSE)
     x
   }
   
@@ -161,6 +61,7 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
       plot(x=xs, y=ys, main=paste(ncol(finalCounts), "Samples by 2 GO:Terms"),
            xlab=paste(Type2,DIM_1$Name,Type1, sep=" - "), ylab=paste(Type2,DIM_2$Name,Type1, sep=" - "),
            pch=pchs, col=cols )
+      legend("topleft",legend=c(GSEPD$Conditions[1],GSEPD$Conditions[2],"Other"),pch=c(1,2,3),col=c(GSEPD$COLORS[1],GSEPD$COLORS[3],1))
     }
     dev.off()
   }else{
@@ -325,17 +226,10 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
         pdf(paste(GSEPD$Output_SCGO,"/GSEPD.", C2T[1],".",C2T[2],".GO",substring(cats[j],4),".pdf",sep=""))
         nGenes=length(unique(thisDEG$REFSEQ))
         if(nGenes>1){
-          if(nGenes==3){
-            ExtractProjection(DEG=thisDEG, Group1Set=G1, Group2Set=G2,
-                              DRAWING=TRUE, GN=unique(thisDEG$REFSEQ),
-                              PRINTING=FALSE,
-                              pchs=pchs,cols=cols)
-          }else{ #otherwise, list them in pairs
-            for(i in seq(1,length(unique(thisDEG$REFSEQ))-1,2))
-              ExtractProjection(DEG=thisDEG, Group1Set=G1, Group2Set=G2, 
+          for(i in seq(1,nGenes-1,2))
+              ExtractProjection(GSEPD, txids = unique(thisDEG$REFSEQ),
                                 DRAWING=TRUE, GN=c(i,i+1),PRINTING=FALSE,
-                                pchs=pchs,cols=cols)
-          }
+                                plotTitle=thisDEG$Term.x[1])
         }
         dev.off();
       }
@@ -346,4 +240,6 @@ GSEPD_ProjectionProcessor <- function(GSEPD) {
   }
 
 }  # end GOCATPROCESSOR for Type1, Type2
+
+
 

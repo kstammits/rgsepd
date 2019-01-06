@@ -14,8 +14,8 @@ See the Vignette for usage examples, and minimal examples within each function's
 \tabular{ll}{
 Package: \tab rgsepd\cr
 Type: \tab Package\cr
-Version: \tab 1.15.1\cr
-Date: \tab 2018-12-24\cr
+Version: \tab 1.15.5\cr
+Date: \tab 2019-01-05\cr
 License: \tab GPL-3\cr
 }
 

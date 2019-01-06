@@ -39,7 +39,8 @@ No return value: generates a figure.
                 finalCounts=round(IlluminaBodymap[rows_of_interest , ]),
                 sampleMeta=IlluminaBodymapMeta,
                 COLORS=c("green","black","red"))
-  G <- GSEPD_ChangeConditions( G, c("A","B")) #set testing groups first!           
+                
+  G <- GSEPD_ChangeConditions( G, c("A","B")) #set testing groups first!    
   G <- GSEPD_Process( G ) #have to have processed results to plot them
   
   GSEPD_Heatmap(G, genes=sample(rownames(G$finalCounts),8) )

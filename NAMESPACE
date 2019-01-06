@@ -11,6 +11,8 @@ export(GSEPD_Heatmap)
 export(Name_to_RefSeq)
 export(DisplayName)
 export(GSEPD_Export_DESeq)
+export(ExtractProjection)
+
 
 import(biomaRt)
 import(DESeq2)
