@@ -1,6 +1,6 @@
 
 GSEPD_INIT <- function( Output_Folder="OUT" ,finalCounts=NULL, sampleMeta=NULL,
-                        DESeqDataSet = NULL, renormalize=TRUE,
+                        DESeqDataSet = NULL, renormalize=TRUE, vstBlind=TRUE,
                         COLORS = c("green", "gray", "red"),
                         C2T = "x" ){
   
@@ -93,15 +93,21 @@ GSEPD_INIT <- function( Output_Folder="OUT" ,finalCounts=NULL, sampleMeta=NULL,
   GSEPD$EXCLUDES<-c("NM_0000000"); #vector of NM ids as strings
   GSEPD$Force_GO_Include<-c("GO:0000000"); #vector of GO ids as strings
   
+  # allow user to change vstBlind setting
+  GSEPD$vstBlind=vstBlind; # used during DESeq2::varianceStabilizingTransformation
+  
+  
   #theoretically you can change the background used for goseq
   #but i've only ever used/tested Entrez IDs on hg19
   GSEPD$GOSEQ <- list(genome="hg19" ,
                       system="knownGene",
                       use_genes_without_cat=TRUE)
   
+  
   GSEPD$GeneIDSystem <- list(Transcript="REFSEQ",
                              GeneID="ENTREZ",
                              GeneName="HGNC")
+  
   
   
   return(GSEPD)

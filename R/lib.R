@@ -387,7 +387,8 @@ GSEPD_Export_DESeq<-function(G){
 GSEPD_CheckCounts <- function(GSEPD) {
   if(is.null(GSEPD$normCounts)) {
     #rld <- rlog()
-    vsd <- DESeq2::varianceStabilizingTransformation(GSEPD_Export_DESeq(GSEPD))
+    vsd <- DESeq2::varianceStabilizingTransformation(GSEPD_Export_DESeq(GSEPD), 
+                                                     blind=GSEPD$vstBlind)
     #rlogMat <- assay(rld)
     vstMat <- assay(vsd)
     GSEPD$normCounts <- vstMat
