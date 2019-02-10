@@ -31,7 +31,8 @@ Returns a list object with four values for each sample.
   \item{beta}{ Distance from the samples to the axis. This is a measure of goodness of fit, when the value is zero it means the sample is a linear interpolation between the comparison groups. When the value is high, the sample is not along the n-dimensional axis. }
   \item{gamma1}{ Distance from the samples to the center of group1 }
   \item{gamma2}{ Distance from the samples to the center of group2 }
-  
+  \item{Validity.Score}{ A score, 0\% through 100\%, of the segregation validity for this gene set among the two sample test groups. }
+  \item{Validity.P}{ The validity score's associated p-value, empirically calculated chance of a random sample assignment creating such a strong score. }
 
 }
 

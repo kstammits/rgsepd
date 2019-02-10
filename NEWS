@@ -3,7 +3,7 @@ CHANGES IN VERSION 1.15
 
  - new legends in scatterplots.
  - custom point colors in PCA plot function. uses sampleMeta$CustomColor and disables the built in legend.
- - custom genes in plots. See ExtractProjection() very useful, not yet in vignette
+ - custom genes in plots. See ExtractProjection() very useful, not yet in vignette - it calculates a projection among your custom gene set. 
  - Add lfcThreshold to the DESeq routines, so the p-values are adjusted correctly. ( implemented 1.15.1 ) This changes the behavior of most of the system. Expect a different gene set.
  - New option to INIT() called renormalize, allowing user to specify preferred matrix normalization schema rather than the default DESeq2::varianceStabilizingTransform (when renormalize=FALSE). 
  - uses p.adjust(method='BH') on GOSeq's results to shorten the GO term list. use the 'padj' column.

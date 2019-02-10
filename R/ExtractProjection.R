@@ -106,12 +106,18 @@ ExtractProjection <- function(GSEPD, txids, DRAWING=FALSE, GN=c(1,2), PRINTING=F
     }
   }
   
+  ValidityScore = Resampled_Significance.k(GSEPD,
+                                           ROI=txids,
+                                           SOI=c(Group1Set,Group2Set))
+  
   x=list();
   x$alpha=alpha
   x$beta=distance_to_line / nrow(myPoints)
   #adding a "gamma" so we can measure the distance to each centroid
   x$gamma1=Gamma1
   x$gamma2=Gamma2
+  x$Validity.Score=ValidityScore$Validity
+  x$Validity.P=ValidityScore$PV
   x
 }
 

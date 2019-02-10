@@ -6,7 +6,7 @@ Initialization}
 \description{Initializes the system, here you will pass in the count dataset and the sample metadata, before any GSEPD processing. Return value is a named list holding configurable parameters. }
 \usage{
 GSEPD_INIT(Output_Folder = "OUT", finalCounts = NULL, sampleMeta = NULL,
-DESeqDataSet = NULL, renormalize = TRUE,
+DESeqDataSet = NULL, renormalize = TRUE, vstBlind=TRUE,
   COLORS = c("green", "gray", "red"),
   C2T = "x" )
 }
