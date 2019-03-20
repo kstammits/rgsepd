@@ -1,0 +1,20 @@
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+
+bibentry(bibtype = "Article",
+         title = "GSEPD: a Bioconductor package for RNA-seq gene set enrichment and projection display",
+         author = c(person("Karl", "Stamm", email="karl.stamm@gmail.com"),
+                    person("Aoy", "Tomita-Mitchell"),
+                    person("Serdar", "Bozdag", email="serdar.bozdag@marquette.edu")),
+         year = year,
+         note = note,
+         doi="10.1186/s12859-019-2697-5",
+         journal="BMC Bioinformatics",
+         publisher="Springer Nature",
+         volume="20",
+         number="1",
+         pages="115",
+         issn="1471-2105",
+         key="Stamm2019",
+         abstract="RNA-seq, wherein RNA transcripts expressed in a sample are sequenced and quantified, has become a widely used technique to study disease and development. With RNA-seq, transcription abundance can be measured, differential expression genes between groups and functional enrichment of those genes can be computed. However, biological insights from RNA-seq are often limited by computational analysis and the enormous volume of resulting data, preventing facile and meaningful review and interpretation of gene expression profiles. Particularly, in cases where the samples under study exhibit uncontrolled variation, deeper analysis of functional enrichment would be necessary to visualize samples' gene expression activity under each biological function.",
+         url = "https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2697-5")
