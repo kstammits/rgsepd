@@ -1,7 +1,7 @@
 Package: rgsepd
 Type: Package
 Title: Gene Set Enrichment / Projection Displays
-Version: 1.15.12
+Version: 1.15.13
 Date: 2019-02-10
 Author: Karl Stamm
 Maintainer: Karl Stamm <karl.stamm@gmail.com>
