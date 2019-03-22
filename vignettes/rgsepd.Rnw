@@ -43,6 +43,23 @@ Columbia University
 New York, NY 10027 },
     url = {http://www1.cs.columbia.edu/~amaxwell/pubs/v_measure-emnlp07.pdf},
   }
+  
+@Article{Stamm2019,
+    title = {GSEPD: a Bioconductor package for RNA-seq gene set enrichment and projection display},
+    author = {Karl Stamm and Aoy Tomita-Mitchell and Serdar Bozdag},
+    year = {2019},
+    doi = {10.1186/s12859-019-2697-5},
+    journal = {BMC Bioinformatics},
+    publisher = {Springer Nature},
+    volume = {20},
+    number = {1},
+    pages = {115},
+    issn = {1471-2105},
+    abstract = {RNA-seq, wherein RNA transcripts expressed in a sample are sequenced and quantified, has become a widely used technique to study disease and development. With RNA-seq, transcription abundance can be measured, differential expression genes between groups and functional enrichment of those genes can be computed. However, biological insights from RNA-seq are often limited by computational analysis and the enormous volume of resulting data, preventing facile and meaningful review and interpretation of gene expression profiles. Particularly, in cases where the samples under study exhibit uncontrolled variation, deeper analysis of functional enrichment would be necessary to visualize samples' gene expression activity under each biological function.},
+    url = {https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2697-5},
+  }
+  
+  
 \end{filecontents*}
  
 
@@ -62,7 +79,7 @@ library(xtable)
 \maketitle
 
 \section{Introduction}
-\verb,GSEPD, is a package for streamlining RNA-Seq data analysis, targeting complex samples with low replicate count such as human tissues, where all factors (metabolic, genetic, etc) cannot be controlled statistically. As a prerequisite, you need only your multiple samples' count data as a matrix whose columns are samples and rows are RefSeq NM and NR transcript identifiers. A second matrix associates sample identifiers with treatment/condition.  Given both datasets, GSEPD will automate differential expression via DESeq2 \cite{DESeq}, functional analysis via GOSeq \cite{GOSeq}, generate heatmaps of gene expression for significantly differentially expressed genes, and subsets of genes defined by the significantly enriched GO Terms.
+\verb,GSEPD, is a package for streamlining RNA-Seq data analysis, targeting complex samples with low replicate count such as human tissues, where all factors (metabolic, genetic, etc) cannot be controlled statistically \cite{Stamm2019}. As a prerequisite, you need only your multiple samples' count data as a matrix whose columns are samples and rows are RefSeq NM and NR transcript identifiers. A second matrix associates sample identifiers with treatment/condition.  Given both datasets, GSEPD will automate differential expression via DESeq2 \cite{DESeq}, functional analysis via GOSeq \cite{GOSeq}, generate heatmaps of gene expression for significantly differentially expressed genes, and subsets of genes defined by the significantly enriched GO Terms.
 
 After gene sets are detected from a differential expression analysis, the results are merged into a novel `projection display' wherein each sample is scored according to each condition's multidimensional average expression. When the treatment samples are found to have a perturbed expression profile for a particular GO Term (geneset), all samples are scored on an axis ranging from control to treatment condition, and outliers or anomalous samples are readily apparent. Clustering quality of samples in a given geneset-space is quantified by the cluster's ``Validity score'' \cite{Validity} and an empirical permutation derived p-value. GO Terms with more genes than samples in your comparison will randomly appear enriched, so the Segregation P-value is used to determine if a GO Term is significantly segregating your samples. 
 

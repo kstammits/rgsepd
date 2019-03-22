@@ -8,7 +8,7 @@ CHANGES IN VERSION 1.15
  - New option to INIT() called renormalize, allowing user to specify preferred matrix normalization schema rather than the default DESeq2::varianceStabilizingTransform (when renormalize=FALSE). 
  - uses p.adjust(method='BH') on GOSeq's results to shorten the GO term list. use the 'padj' column.
  - New option to DESeq , vst with blind=TRUE/FALSE at user discretion.
- 
+ - added CITATION FILE in 1.15.13
  
 CHANGES IN VERSION 1.11.5
 --------------------------

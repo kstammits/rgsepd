@@ -1,8 +1,8 @@
 Package: rgsepd
 Type: Package
 Title: Gene Set Enrichment / Projection Displays
-Version: 1.15.13
-Date: 2019-02-10
+Version: 1.15.14
+Date: 2019-03-22
 Author: Karl Stamm
 Maintainer: Karl Stamm <karl.stamm@gmail.com>
 Description: R/GSEPD is a bioinformatics package for R to help
