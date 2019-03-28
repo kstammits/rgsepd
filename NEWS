@@ -9,6 +9,7 @@ CHANGES IN VERSION 1.15
  - uses p.adjust(method='BH') on GOSeq's results to shorten the GO term list. use the 'padj' column.
  - New option to DESeq , vst with blind=TRUE/FALSE at user discretion.
  - added CITATION FILE in 1.15.13
+ - tweaking vignette in 1.15.15 to debug bioconductor OSX build-server LaTeX versions. 
  
 CHANGES IN VERSION 1.11.5
 --------------------------
