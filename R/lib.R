@@ -146,7 +146,7 @@ biomaRt_Lookup <- function(res) {
   ensembl = useDataset("hsapiens_gene_ensembl",mart=ensembl)
   attrs=listAttributes(ensembl)
   aa=c("refseq_mrna" , "chromosome_name" , "start_position" ,  "end_position" ,
-       "entrezgene" ,      "hgnc_symbol",      "description" );
+       "entrezgene_id" ,      "hgnc_symbol",      "description" );
   
   #well of those that start with NM we want to query refseq_mrna
   #and for those that start withj NR we want to query refseq_ncrna
@@ -158,7 +158,7 @@ biomaRt_Lookup <- function(res) {
     if(nrow(bmt_NM)>0) {
     for(i in 1:length(bmt_NM$refseq_mrna)){
       rightrow=which(res$id==bmt_NM$refseq_mrna[i])[1];
-      res$ENTREZ[rightrow] <- as.character(bmt_NM$entrezgene[i])
+      res$ENTREZ[rightrow] <- as.character(bmt_NM$entrezgene_id[i])
       res$HGNC[rightrow] <- as.character(bmt_NM$hgnc_symbol[i])
       res$LOCUS[rightrow] <- paste(bmt_NM$chromosome_name[i], ":",bmt_NM$start_position[i],"-",bmt_NM$end_position[i],sep="");
       res$DESC[rightrow] <- bmt_NM$description[i]
@@ -194,7 +194,7 @@ AnnotateTable <- function(G){
   #id	baseMean	baseMeanA	baseMeanB	foldChange	log2FoldChange	pval	padj
   # print("dumping rows with PADJ>0.90")
   # res=subset(res,padj <= 0.90)
-  message("dumping rows with raw PVAL>0.990 OR baseMean < 1 OR on excludes list")
+  message("dropping rows with raw PVAL>0.990 OR baseMean < 1 OR on excludes list")
   res=subset(res,res$pval <= 0.990 & res$baseMean >= 1 & !(res$id %in% G$EXCLUDES))
   res$id = sub(" +$", "", res$id)
   message(paste("Rows remaining:",length(res$id)));

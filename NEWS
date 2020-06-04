@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.21
+--------------------------
+
+ - attempts to support other organisms and gene IDs
+ - breakdown of process functions for modularity
+ - changing some less than signs to less than or equal to, to ensure we get results.
+
 CHANGES IN VERSION 1.15
 --------------------------
 
