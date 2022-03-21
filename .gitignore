@@ -5,3 +5,9 @@
 .DS_Store
 OUT/
 rgsepd-BIOCGIT.Rproj
+vignettes/figure/GSEPD_Heatmap_-_PCA-1.pdf
+vignettes/rgsepd.bbl
+vignettes/rgsepd-concordance.tex
+vignettes/rgsepd.log
+vignettes/rgsepd.synctex.gz
+vignettes/rgsepd.tex
