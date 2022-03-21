@@ -23,8 +23,7 @@ import(AnnotationDbi)
 
 importFrom(gplots, heatmap.2)
 importFrom(SummarizedExperiment, assay)
-importFrom(hash,hash)
-importFrom(hash,values)
+
 
 importFrom("grDevices", "colorRampPalette", "dev.off", "pdf", "png")
 importFrom("graphics", "hist", "legend", "lines", "mtext", "pairs",

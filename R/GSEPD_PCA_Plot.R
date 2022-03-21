@@ -161,7 +161,10 @@ GSEPD_PCA_Spec <- function(GSEPD, GOT, MDATA=NULL, customColors=FALSE){
   else
     M.data <- MDATA
   
-  HGNC <- hash(M.data$REFSEQ, M.data$HGNC)
+  #HGNC <- hash(M.data$REFSEQ, M.data$HGNC)
+  HGNC <- as.character(M.data$HGNC)
+  names(HGNC) <- as.character(M.data$REFSEQ)
+  
   roi <- (M.data$category==GOT) #find the entry in Mdata
   GOName<-sprintf("%s %s",M.data$Term.x[roi][1], M.data$category[roi][1]); 
   #select GOI
@@ -198,7 +201,7 @@ GSEPD_PCA_Spec <- function(GSEPD, GOT, MDATA=NULL, customColors=FALSE){
     points(x=fc, y=runif(length(fc))*5+2, cex=2,pch=pchs,col=cols)    
   }else if(NG<3){ ## == 2 ... regular scatter plot
     sfc=fc
-    gns=hash::values(HGNC[rownames(sfc)])
+    gns=HGNC[rownames(sfc)]
     plot(x=sfc[1,], y=sfc[2,],
          xlab=sprintf("%s Normalized Counts",gns[1]),
          ylab=sprintf("%s Normalized Counts",gns[2]),
@@ -218,11 +221,11 @@ GSEPD_PCA_Spec <- function(GSEPD, GOT, MDATA=NULL, customColors=FALSE){
     ANNOTE_GENES=min(c(5,nrow(sfc))) #the most important genes are 
     PC1= names(sort( abs(pc.md$x[,dims[1]]) ,
                      decreasing=TRUE )[1:ANNOTE_GENES])
-    gns=hash::values(HGNC[PC1])
+    gns=as.character(HGNC[PC1])
     mtext(side=1,text=gns,at=seq(min(x),max(x),length.out=ANNOTE_GENES),line=3)
     PC2= names(sort( abs(pc.md$x[,dims[2]]) ,
                      decreasing=TRUE )[1:ANNOTE_GENES])
-    gns=hash::values(HGNC[PC2])
+    gns=as.character(HGNC[PC2])
     mtext(side=2,text=gns,at=seq(min(y),max(y),length.out=ANNOTE_GENES),line=3) 
   }
   if(customColors){

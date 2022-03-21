@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.27
+--------------------------
+
+ - library(hash) is going away in 2022, so we need to replace that functionality with native R 4.2 environments. Shouldn't impact users.
+
 CHANGES IN VERSION 1.21
 --------------------------
 

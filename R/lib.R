@@ -3,6 +3,18 @@
 #later when I want 'global' variables in the rgsepd code, theyll be stored under pkg_globals
 pkg_globals <- new.env();
 
+
+# the hash table package is going away in 2022 and we need to replace its functionality
+hash <- function(keys, values){
+  ht1 <- new.env(hash=TRUE)
+  stopifnot(length(keys) == length(values))
+  for(j in 1:length(keys)){
+    ht1[[keys[j]]] <- values[j]
+  }
+  ht1
+}
+
+
 .onAttach <- function(libname, pkgname) {
   packageStartupMessage(sprintf("Loading R/GSEPD %s",packageDescription("rgsepd")$Version))
   packageStartupMessage("Building human gene name caches")
@@ -11,6 +23,8 @@ pkg_globals <- new.env();
   # http://stackoverflow.com/questions/12598242/global-variables-in-packages-in-r
   #assign("pkg_globals", new.env(), envir=parent.env(environment()))
 
+
+  
   RefSeqs <- grep("^N[MR]_",
                   AnnotationDbi::keys(org.Hs.eg.db,keytype="REFSEQ"),
                   value=TRUE)

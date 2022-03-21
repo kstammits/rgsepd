@@ -9,7 +9,8 @@ RefSeq_to_EG <- function(nm){
   if(length(nm)==0)
     return(NA)
   #else; do one:
-  hash::values(get("R2E", pkg_globals)[nm])
+  #hash::values(get("R2E", pkg_globals)[nm])
+  get("R2E", pkg_globals)[[nm]]
 }
 
 EG_to_Name <- function(eg){
@@ -18,7 +19,8 @@ EG_to_Name <- function(eg){
   if(length(eg)==0)
     return(NA)
   #else; do one:
-  hash::values(get("E2H", pkg_globals)[eg])
+  #hash::values(get("E2H", pkg_globals)[eg])
+  get("E2H", pkg_globals)[[eg]]
 }
 
 Name_to_RefSeq <- function(x){
@@ -27,7 +29,8 @@ Name_to_RefSeq <- function(x){
   if(length(x)==0)
     return(NA)
   #else; do one:
-  hash::values(get("H2R", pkg_globals)[x])
+  #hash::values(get("H2R", pkg_globals)[x])
+  get("H2R", pkg_globals)[[x]]
 }
 
 DisplayName <- function(txid){
@@ -36,7 +39,8 @@ DisplayName <- function(txid){
   if(length(txid)==0)
     return("NA")
   #else; do one:
-  hash::values(get("R2H", pkg_globals)[txid])
+  #hash::values(get("R2H", pkg_globals)[txid])
+  get("R2H", pkg_globals)[[txid]]
 }
 
 
@@ -73,30 +77,33 @@ build_Annotation_Matrix <- function(nms){
   return(O)
 }
   
-
-
+#
 
 EnsureCleanIDs <- function(NM){
  #make sure all NMs are available in R2E and R2H before it causes a crash
   hR2H <- get("R2H", pkg_globals)
-  missingKeys <- NM[!(NM %in% hash::keys(hR2H))]
+  missingKeys <- NM[!(NM %in% names(hR2H))]
   if(length(missingKeys)>0) {
-    hR2H[missingKeys] <- missingKeys
+    for(j in 1:length(missingKeys))
+      hR2H[[missingKeys[j]]] <- missingKeys[j]
     assign("R2H", hR2H, pkg_globals)
   }
   
   hR2E <- get("R2E", pkg_globals)
-  missingKeys <- NM[!(NM %in% hash::keys(hR2E))]
+  missingKeys <- NM[!(NM %in% names(hR2E))]
   if(length(missingKeys)>0) {
-    hR2E[missingKeys] <- missingKeys
+    for(j in 1:length(missingKeys))
+       hR2E[[missingKeys[j]]] <- missingKeys[j]
     assign("R2E", hR2E, pkg_globals)
   }
   
   hE2H <- get("E2H", pkg_globals)
-  allEG <- hash::values(hR2E)
-  missingKeys <- allEG[!(allEG %in% hash::keys(hE2H))]
+  allEG <- as.character(unlist(as.list(hR2E)) )
+
+  missingKeys <- allEG[!(allEG %in% names(hE2H))]
   if(length(missingKeys)>0) {
-    hE2H[missingKeys] <- missingKeys 
+    for(j in 1:length(missingKeys))
+      hE2H[[missingKeys[j]]] <- missingKeys[j]
     # their assigned HGNC is equal to their EntrezGeneID
     assign("E2H", hE2H, pkg_globals)
   }
