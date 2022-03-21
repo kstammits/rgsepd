@@ -156,7 +156,7 @@ biomaRt_Lookup <- function(res) {
   #now subset the table to those we didn't know yet.
   gns=unique( subset(res,is.na(res$ENTREZ))$id)
   #listMarts(host="www.ensembl.org")
-  ensembl = useMart("ENSEMBL_MART_ENSEMBL", host="www.ensembl.org")
+  ensembl = useMart("ENSEMBL_MART_ENSEMBL", host="https://www.ensembl.org")
   ensembl = useDataset("hsapiens_gene_ensembl",mart=ensembl)
   attrs=listAttributes(ensembl)
   aa=c("refseq_mrna" , "chromosome_name" , "start_position" ,  "end_position" ,
@@ -267,7 +267,7 @@ AnnotateTable.GO <- function(G){
     ToLevel=round((0.075*nrow(sdata)))
     PThresh = sort(sdata$PVAL,decreasing=FALSE)[ToLevel]
     DEG=ifelse(sdata$PVAL < PThresh , 1,0)
-    message(sprintf("Not many genes found differentially expressed, (re)moving the filters to raw p=%f so we can use %d genes with GOSEQ.",PThresh,sum(DEG)))
+    message(sprintf("Not many genes found differentially expressed, (re)moving the filters to raw p=%g so we can use %d genes with GOSEQ.",PThresh,sum(DEG)))
   }
   if(sum(DEG)<2){
     stop("I can't do pathways or GO terms when so few genes pass significance. Try changing your G$LIMIT parameters.")
