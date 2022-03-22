@@ -211,7 +211,7 @@ AnnotateTable <- function(G){
   message("dropping rows with raw PVAL>0.990 OR baseMean < 1 OR on excludes list")
   res=subset(res,res$pval <= 0.990 & res$baseMean >= 1 & !(res$id %in% G$EXCLUDES))
   res$id = sub(" +$", "", res$id)
-  message(paste("Rows remaining:",length(res$id)));
+  message(paste("deseq txid rows remaining:",length(res$id)));
   if(length(unique(res$id)) < 1){
     warning("AnnotateTable : no rows significant enough to annotate.  Quitting table re-gen.");
     return();
@@ -259,15 +259,18 @@ AnnotateTable.GO <- function(G){
   
   #default hard filtering:
   DEG=ifelse(  sdata$PADJ < G$LIMIT$PADJ  &
-               sdata$baseMean >= G$LIMIT$baseMean &
-               abs(sdata$LOG2.X.Y.) >= G$LIMIT$LFC, 1,0)
+                sdata$baseMean >= G$LIMIT$baseMean &
+                abs(sdata$LOG2.X.Y.) >= G$LIMIT$LFC,
+               1,0)
   
   #but if we're not set to HARD mode, and we got only a handful of genes:
   if( !(G$LIMIT$HARD) && sum(DEG)<(0.075*length(DEG))){
-    ToLevel=round((0.075*nrow(sdata)))
+    ToLevel = round((0.075*nrow(sdata)))
     PThresh = sort(sdata$PVAL,decreasing=FALSE)[ToLevel]
-    DEG=ifelse(sdata$PVAL < PThresh , 1,0)
-    message(sprintf("Not many genes found differentially expressed, (re)moving the filters to raw p=%g so we can use %d genes with GOSEQ.",PThresh,sum(DEG)))
+    DEG = ifelse(sdata$PVAL < PThresh , 1,0)
+    message( sprintf(
+"Not many genes found differentially expressed, (re)moving the filters to raw p=%g so we can use %d genes with GOSEQ.",
+                    PThresh,sum(DEG)))
   }
   if(sum(DEG)<2){
     stop("I can't do pathways or GO terms when so few genes pass significance. Try changing your G$LIMIT parameters.")
@@ -317,8 +320,10 @@ AnnotateTable.GO <- function(G){
   
   FilterGOSEQ <- function(GOR, PLIM) {
     # do a Benjamini-Hochberg correction of p-values.
-    GOR$over_represented_padj = p.adjust(GOR$over_represented_pvalue, method="BH")
-    GOR$under_represented_padj = p.adjust(GOR$under_represented_pvalue, method="BH")
+    GOR$over_represented_padj = p.adjust(GOR$over_represented_pvalue,
+                                         method=as.character(G$LIMIT$goseq_padj_method))
+    GOR$under_represented_padj = p.adjust(GOR$under_represented_pvalue,
+                                          method=as.character(G$LIMIT$goseq_padj_method))
     #filter reported set to something with a pvalue:
     GOR$minp <- apply(cbind( 
       GOR$over_represented_padj , GOR$under_represented_padj),
