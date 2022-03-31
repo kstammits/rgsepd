@@ -152,7 +152,7 @@ LocalDB_Lookup <- function(res)
 
 
 biomaRt_Lookup <- function(res) {  
-
+  message("Converting identifiers with biomart");
   #now subset the table to those we didn't know yet.
   gns=unique( subset(res,is.na(res$ENTREZ))$id)
   #listMarts(host="www.ensembl.org")
@@ -220,11 +220,14 @@ AnnotateTable <- function(G){
   message("Converting identifiers with local DB");
   res<-LocalDB_Lookup(res);
   #and the rest
-  message("Converting identifiers with biomart");
   #fix strings?
   res$ENTREZ <- as.character(res$ENTREZ)
   res$HGNC <- as.character(res$HGNC)
   
+  # in 2022 Ensembl is giving warning messages about https
+  # and https is giving error messages on ubuntu or cluster environments
+  # we can omit the biomart calls and get our results more reliably. 
+  if(FALSE){
    res = tryCatch({
      biomaRt_Lookup(res)
    }, warning = function(w) {
@@ -234,6 +237,8 @@ AnnotateTable <- function(G){
      warning(e) #if bioMart is down, just keep moving.
      res
    })
+  }
+   
   res<-subset(res,select=c("id","baseMean","baseMeanA","baseMeanB","foldChange","log2FoldChange","lfcSE","pval","padj","HGNC","ENTREZ"))
   columns = c("REFSEQ","baseMean",C2T[1],C2T[2],"(X/Y)","LOG2(X/Y)","lfcSE","PVAL","PADJ","HGNC","ENTREZ");
   if(!G$QUIET)Message_Generate(outfile)
