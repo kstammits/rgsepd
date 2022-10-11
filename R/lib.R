@@ -219,8 +219,7 @@ AnnotateTable <- function(G){
   
   message("Converting identifiers with local DB");
   res<-LocalDB_Lookup(res);
-  #and the rest
-  #fix strings?
+  #and the rest  #fix strings?
   res$ENTREZ <- as.character(res$ENTREZ)
   res$HGNC <- as.character(res$HGNC)
   

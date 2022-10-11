@@ -19,7 +19,8 @@ The NM_### id numbers corresponding to the input gene names (HGNC symbols.)
 }
 
 \note{
-This routine relies on bioconductor annotation package org.Hs.eg.db to ensure the most up to date mappings. }
+This routine relies on bioconductor annotation package org.Hs.eg.db to ensure the most up to date mappings. 
+A few years after writing this function, some gene names have had their primary transcript ID changed to a new one. It's not in the old bundled dataset, and some scripts are not running properly anymore. Will have to update the dataset or use a more modern version. }
 
 \examples{
 

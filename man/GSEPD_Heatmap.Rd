@@ -31,7 +31,8 @@ No return value: generates a figure.
   data("IlluminaBodymap")
   data("IlluminaBodymapMeta")
   set.seed(1000) #fixed randomness
-  isoform_ids <- Name_to_RefSeq(c("HIF1A","EGFR","MYH7","CD33","BRCA2"))
+  x <- Name_to_RefSeq(c("HIF1A","EGFR","MYH7","CD33","BRCA2"))
+  isoform_ids = x[x  %in% rownames(IlluminaBodymap)]
   rows_of_interest <- unique( c( isoform_ids ,
                                  sample(rownames(IlluminaBodymap),
                                         size=2000,replace=FALSE)))

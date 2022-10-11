@@ -33,6 +33,20 @@ Name_to_RefSeq <- function(x){
   get("H2R", pkg_globals)[[x]]
 }
 
+RefSeq_to_Name <- function(x){
+  if(length(x)>1)
+    return(unlist(lapply(x,RefSeq_to_Name)))
+  if(length(x)==0)
+    return(NA)
+  #else; do one:
+  #hash::values(get("H2R", pkg_globals)[x])
+  y = get("R2H", pkg_globals)[[x]]
+  if(length(y)==0)
+    return("NA")
+  y
+}
+
+
 DisplayName <- function(txid){
   if(length(txid)>1)
     return(unlist(lapply(txid,DisplayName)))
