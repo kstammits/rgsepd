@@ -42,7 +42,7 @@ Returns a list object with four values for each sample.
   data("IlluminaBodymapMeta")
   set.seed(1000) #fixed randomness
   x <- Name_to_RefSeq(c("HIF1A","EGFR","MYH7","CD33","BRCA2"))
-  isoform_ids = x[x  %in% rownames(IlluminaBodymap)]
+  isoform_ids = intersect(x, rownames(IlluminaBodymap))
   rows_of_interest <- unique( c( isoform_ids ,
                                  sample(rownames(IlluminaBodymap),
                                         size=2000,replace=FALSE)))
